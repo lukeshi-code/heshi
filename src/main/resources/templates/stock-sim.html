@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>妯℃嫙鑲＄エ</title>
+    <title>模拟股票</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <div class="shell">
     <div class="nav">
-        <a class="brand" th:href="@{/}">鍜岀煶璧勬湰</a>
+        <a class="brand" th:href="@{/}">和石资本</a>
         <div class="nav-actions">
             <a th:each="m : ${navMenus}"
                th:href="${m.resolvedUrl}"
@@ -20,17 +20,17 @@
 
     <div class="card">
         <div class="section-head">
-            <h1>妯℃嫙鑲＄エ椤甸潰</h1>
-            <a class="text-link" th:href="@{/}">杩斿洖棣栭〉</a>
+            <h1>模拟股票页面</h1>
+            <a class="text-link" th:href="@{/}">返回首页</a>
         </div>
-        <p class="muted">琛屾儏鍥句粎浣滀负鏁撮〉涓殑涓€涓垎鏋愭ā鍧楋紝鏀寔鍒嗘椂鍜屾棩/鍛?鏈?K 绾匡紝鍙充晶淇濈暀浜ゆ槗鏄庣粏涓庤鏄庡尯銆?/p>
+        <p class="muted">行情图仅作为整页中的一个分析模块，支持分时和日/周/月 K 线，右侧保留交易明细与说明区。</p>
     </div>
 
     <div class="stock-page-layout">
         <div class="card quote-app quote-app-compact">
             <div class="quote-search">
-                <input id="quoteCode" type="text" placeholder="杈撳叆鑲＄エ浠ｇ爜鎴栧悕绉帮紝渚嬪锛?00519 / 璐靛窞鑼呭彴">
-                <button class="primary" type="button" onclick="queryQuote()">鏌ヨ</button>
+                <input id="quoteCode" type="text" placeholder="输入股票代码或名称，例如：600519 / 贵州茅台">
+                <button class="primary" type="button" onclick="queryQuote()">查询</button>
             </div>
 
             <div class="quote-summary">
@@ -40,20 +40,20 @@
                     <div id="sChange" class="delta">-</div>
                 </div>
                 <div class="summary-grid">
-                    <div>浠婂紑 <span id="sOpen">-</span></div>
-                    <div>鏄ㄦ敹 <span id="sPreClose">-</span></div>
-                    <div>鏈€楂?<span id="sHigh">-</span></div>
-                    <div>鏈€浣?<span id="sLow">-</span></div>
-                    <div>鎴愪氦閲?<span id="sVol">-</span></div>
-                    <div>鏇存柊鏃堕棿 <span id="sTime">-</span></div>
+                    <div>今开 <span id="sOpen">-</span></div>
+                    <div>昨收 <span id="sPreClose">-</span></div>
+                    <div>最高 <span id="sHigh">-</span></div>
+                    <div>最低 <span id="sLow">-</span></div>
+                    <div>成交量 <span id="sVol">-</span></div>
+                    <div>更新时间 <span id="sTime">-</span></div>
                 </div>
             </div>
 
             <div class="quote-tabs app-tabs">
-                <button id="tab-min" class="quote-tab active" type="button" onclick="switchTab('min')">鍒嗘椂鍥?/button>
-                <button id="tab-day" class="quote-tab" type="button" onclick="switchTab('day')">鏃</button>
-                <button id="tab-week" class="quote-tab" type="button" onclick="switchTab('week')">鍛↘</button>
-                <button id="tab-month" class="quote-tab" type="button" onclick="switchTab('month')">鏈圞</button>
+                <button id="tab-min" class="quote-tab active" type="button" onclick="switchTab('min')">分时图</button>
+                <button id="tab-day" class="quote-tab" type="button" onclick="switchTab('day')">日K</button>
+                <button id="tab-week" class="quote-tab" type="button" onclick="switchTab('week')">周K</button>
+                <button id="tab-month" class="quote-tab" type="button" onclick="switchTab('month')">月K</button>
             </div>
 
             <div id="quoteHeadline" class="quote-headline">-</div>
@@ -66,9 +66,9 @@
                 </div>
                 <div class="tick-col">
                     <div class="tick-head">
-                        <span>鏃堕棿</span>
-                        <span>浠锋牸</span>
-                        <span>鎵嬫暟</span>
+                        <span>时间</span>
+                        <span>价格</span>
+                        <span>手数</span>
                     </div>
                     <div id="tickList" class="tick-list"></div>
                 </div>
@@ -76,12 +76,12 @@
         </div>
 
         <div class="card side-panel">
-            <h3>妯″潡璇存槑</h3>
-            <p class="muted">1. 鏀寔杈撳叆鑲＄エ浠ｇ爜鍜屽悕绉版煡璇€?/p>
-            <p class="muted">2. 鍒嗘椂鍥炬寜瀹屾暣浜ゆ槗鏃舵缁樺埗锛屽寘鍚崍浼戞柇鐐广€?/p>
-            <p class="muted">3. 鏃?鍛?鏈堝睍绀轰负鐪熸铚＄儧鍥撅紙瀹炰綋+褰辩嚎锛夈€?/p>
-            <h3>瀹夊叏鎻愮ず</h3>
-            <p class="muted">浠呯敤浜庢暟鎹悓姝ヤ笌鍒嗘瀽灞曠ず锛屼笉娑夊強璧勯噾鎿嶄綔銆?/p>
+            <h3>模块说明</h3>
+            <p class="muted">1. 支持输入股票代码和名称查询。</p>
+            <p class="muted">2. 分时图按完整交易时段绘制，包含午休断点。</p>
+            <p class="muted">3. 日/周/月展示为真正蜡烛图（实体+影线）。</p>
+            <h3>安全提示</h3>
+            <p class="muted">仅用于数据同步与分析展示，不涉及资金操作。</p>
         </div>
     </div>
 </div>
@@ -318,7 +318,7 @@ function drawQuoteChart() {
   ictx.stroke();
   ictx.fillStyle = "#737f8d";
   ictx.font = "12px Segoe UI";
-  ictx.fillText("鎸囨爣绾?, 10, 14);
+  ictx.fillText("指标线", 10, 14);
 
   const now = currentTab === "min"
     ? prices[prices.length - 1]
@@ -329,9 +329,9 @@ function drawQuoteChart() {
   const volNow = vols.reduce((a, b) => a + b, 0);
   document.getElementById("quoteHeadline").textContent =
     (currentQuote && currentQuote.updateTime ? currentQuote.updateTime.slice(11, 16) : "--:--") +
-    " 鍧囦环:" + avgNow.toFixed(2) + " 鏈€鏂?" + now.toFixed(2) +
-    " 娑ㄨ穼:" + chg.toFixed(2) + " " + pct.toFixed(2) + "%" +
-    " 閲?" + Math.round(volNow / 100);
+    " 均价:" + avgNow.toFixed(2) + " 最新:" + now.toFixed(2) +
+    " 涨跌:" + chg.toFixed(2) + " " + pct.toFixed(2) + "%" +
+    " 量:" + Math.round(volNow / 100);
 
   renderTickList();
 }
@@ -348,7 +348,7 @@ function renderTickList() {
   for (let i = Math.max(1, prices.length - 22); i < prices.length; i++) {
     const price = prices[i];
     const prev = prices[i - 1];
-    const side = price >= prev ? "涔? : "鍗?;
+    const side = price >= prev ? "买" : "卖";
     const cls = price >= prev ? "up" : "down";
     const hand = Math.max(1, Math.round((quoteVolume.min[i] || 0) / 100));
     items.push('<div class="tick-row"><span>' + (times[i] || "--:--") + '</span><span class="' + cls + '">' + price.toFixed(2) + '</span><span>' + side + hand + '</span></div>');
@@ -390,7 +390,7 @@ async function queryQuote() {
     periods.forEach((p, i) => applySeries(p, series[i] && series[i].points));
     switchTab(currentTab);
   } catch (_) {
-    alert("鏌ヨ澶辫触锛岃绋嶅悗閲嶈瘯");
+    alert("查询失败，请稍后重试");
   }
 }
 
@@ -398,4 +398,3 @@ queryQuote();
 </script>
 </body>
 </html>
-

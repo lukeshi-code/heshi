@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鏂伴椈鍔ㄦ€?- 鍜岀煶绉戞妧</title>
+    <title>新闻动态 - 和石科技</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
 <div class="shell">
     <header class="nav">
         <div>
-            <div class="brand">鍜岀煶绉戞妧</div>
+            <div class="brand">和石科技</div>
             <div class="brand-sub">NEWS & UPDATES</div>
         </div>
         <div class="nav-actions">
@@ -25,16 +25,16 @@
 
     <section class="page-hero">
         <div class="eyebrow">News</div>
-        <h1>浼佷笟鍔ㄦ€併€佷骇鍝佹洿鏂颁笌鎶€鏈枃绔?/h1>
-        <p class="lead">鍦ㄨ繖閲屾寔缁彂甯冪増鏈洿鏂般€佸姛鑳借鏄庡拰椤圭洰杩涘睍锛屽舰鎴愬彲杩借釜鐨勫唴瀹逛綋绯汇€?/p>
+        <h1>企业动态、产品更新与技术文章</h1>
+        <p class="lead">在这里持续发布版本更新、功能说明和项目进展，形成可追踪的内容体系。</p>
     </section>
 
     <section class="card newsroom">
         <div class="section-head">
-            <h2>鍏ㄩ儴鍐呭</h2>
-            <a class="secondary button-link" th:if="${canAccessArticleCreate}" th:href="@{/articles/new}">鍙戝竷鏂囩珷</a>
+            <h2>全部内容</h2>
+            <a class="secondary button-link" th:if="${canAccessArticleCreate}" th:href="@{/articles/new}">发布文章</a>
         </div>
-        <div class="empty" th:if="${articles.isEmpty()}">杩樻病鏈夊唴瀹癸紝娆㈣繋鍏堝彂甯冪涓€绡囧姩鎬併€?/div>
+        <div class="empty" th:if="${articles.isEmpty()}">还没有内容，欢迎先发布第一篇动态。</div>
         <div class="article-list" th:unless="${articles.isEmpty()}">
             <a class="article-item article-item-rich" th:each="article : ${articles}" th:href="@{'/articles/' + ${article.id}}">
                 <div class="article-top">
@@ -44,7 +44,7 @@
                 <p th:text="${#strings.abbreviate(article.content, 180)}"></p>
                 <div class="article-meta">
                     <span th:text="${article.author.displayName}"></span>
-                    <span th:if="${article.attachmentPath != null}">鍚檮浠?/span>
+                    <span th:if="${article.attachmentPath != null}">含附件</span>
                 </div>
             </a>
         </div>
@@ -52,4 +52,3 @@
 </div>
 </body>
 </html>
-

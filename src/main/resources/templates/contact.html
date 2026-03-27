@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鑱旂郴鎴戜滑 - 鍜岀煶绉戞妧</title>
+    <title>联系我们 - 和石科技</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
 <div class="shell">
     <header class="nav">
         <div>
-            <div class="brand">鍜岀煶绉戞妧</div>
+            <div class="brand">和石科技</div>
             <div class="brand-sub">CONTACT & COOPERATION</div>
         </div>
         <div class="nav-actions">
@@ -25,24 +25,24 @@
 
     <section class="page-hero">
         <div class="eyebrow">Contact</div>
-        <h1>娆㈣繋鍜屾垜浠璁洪」鐩缓璁句笌涓婄嚎璁″垝</h1>
-        <p class="lead">濡傛灉浣犲笇鏈涘畬鍠勫畼缃戙€佹惌寤哄悗鍙般€佷紭鍖栨潈闄愪綋绯绘垨鎺ュ叆琛屾儏妯″潡锛屾杩庤仈绯汇€?/p>
+        <h1>欢迎和我们讨论项目建设与上线计划</h1>
+        <p class="lead">如果你希望完善官网、搭建后台、优化权限体系或接入行情模块，欢迎联系。</p>
     </section>
 
     <section class="grid two">
         <div class="card">
-            <h2>鑱旂郴鏂瑰紡</h2>
+            <h2>联系方式</h2>
             <div class="list feature-list">
-                <div><span>鏈嶅姟鏂瑰悜</span><strong>浼佷笟瀹樼綉 / 绠＄悊鍚庡彴 / 鍐呭绯荤粺 / 鏁版嵁鍙鍖?/strong></div>
-                <div><span>鍟嗗姟閭</span><strong>contact@heshitech.com</strong></div>
-                <div><span>鎶€鏈敮鎸?/span><strong>support@heshitech.com</strong></div>
-                <div><span>鍚堜綔褰㈠紡</span><strong>椤圭洰鍒?/ 骞村害鎶€鏈敮鎸?/ 瀹氬埗寮€鍙?/strong></div>
+                <div><span>服务方向</span><strong>企业官网 / 管理后台 / 内容系统 / 数据可视化</strong></div>
+                <div><span>商务邮箱</span><strong>contact@heshitech.com</strong></div>
+                <div><span>技术支持</span><strong>support@heshitech.com</strong></div>
+                <div><span>合作形式</span><strong>项目制 / 年度技术支持 / 定制开发</strong></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>杩戞湡鍐呭</h2>
-            <div class="empty" th:if="${articles.isEmpty()}">褰撳墠鏆傛棤鍙戝竷鍐呭銆?/div>
+            <h2>近期内容</h2>
+            <div class="empty" th:if="${articles.isEmpty()}">当前暂无发布内容。</div>
             <div class="article-list" th:unless="${articles.isEmpty()}">
                 <a class="article-item" th:each="article, stat : ${articles}" th:if="${stat.index < 3}" th:href="@{'/articles/' + ${article.id}}">
                     <div class="article-top">
@@ -57,4 +57,3 @@
 </div>
 </body>
 </html>
-
