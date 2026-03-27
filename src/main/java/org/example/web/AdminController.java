@@ -191,7 +191,7 @@ public class AdminController {
         siteMenuService.create(menuName);
         siteOpsService.log(operator(authentication), "CREATE_MENU", "/admin/visual-pages", "Created menu item");
         redirectAttributes.addFlashAttribute("successMessage", "菜单已新增。");
-        return "redirect:/admin/visual-pages?tab=navigation";
+        return "redirect:/admin/visual-pages?tab=page";
     }
 
     @PostMapping("/admin/menus/batch")
@@ -209,7 +209,7 @@ public class AdminController {
         siteMenuService.batchSave(menuIds, menuNames, parentIds, linkTypes, internalPaths, externalUrls, visibles, openWindows, sortOrders);
         siteOpsService.log(operator(authentication), "BATCH_SAVE_MENU", "/admin/visual-pages", "Saved menu tree and configs");
         redirectAttributes.addFlashAttribute("successMessage", "菜单配置已保存。");
-        return "redirect:/admin/visual-pages?tab=navigation";
+        return "redirect:/admin/visual-pages?tab=page";
     }
 
     @PostMapping("/admin/modules/create")
@@ -392,8 +392,9 @@ public class AdminController {
     private String normalizeTab(String tab) {
         if (tab == null) return "dashboard";
         String value = tab.trim().toLowerCase();
+        if ("navigation".equals(value)) return "page";
         if ("dashboard".equals(value) || "page".equals(value) || "content".equals(value)
-            || "module".equals(value) || "assets".equals(value) || "navigation".equals(value)
+            || "module".equals(value) || "assets".equals(value)
             || "theme".equals(value) || "permission".equals(value) || "stats".equals(value)
             || "system".equals(value)) {
             return value;

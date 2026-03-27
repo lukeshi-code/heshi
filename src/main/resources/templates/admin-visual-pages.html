@@ -12,11 +12,10 @@
         <div class="admin-proto-logo" th:text="${settingMap['theme.logoText'] != null and !#strings.isEmpty(settingMap['theme.logoText']) ? settingMap['theme.logoText'] : '网站后台管理'}">网站后台管理</div>
         <div class="admin-proto-menu">
             <a class="item" th:classappend="${activeTab == 'dashboard'} ? ' active'" th:href="@{/admin/visual-pages(tab='dashboard')}">仪表盘</a>
-            <a class="item" th:classappend="${activeTab == 'page'} ? ' active'" th:href="@{/admin/visual-pages(tab='page')}">页面管理</a>
+            <a class="item" th:classappend="${activeTab == 'page'} ? ' active'" th:href="@{/admin/visual-pages(tab='page')}">页面与导航</a>
             <a class="item" th:classappend="${activeTab == 'content'} ? ' active'" th:href="@{/admin/visual-pages(tab='content')}">内容管理</a>
             <a class="item" th:classappend="${activeTab == 'module'} ? ' active'" th:href="@{/admin/visual-pages(tab='module')}">模块管理</a>
             <a class="item" th:classappend="${activeTab == 'assets'} ? ' active'" th:href="@{/admin/visual-pages(tab='assets')}">资源库</a>
-            <a class="item" th:classappend="${activeTab == 'navigation'} ? ' active'" th:href="@{/admin/visual-pages(tab='navigation')}">导航管理</a>
             <a class="item" th:classappend="${activeTab == 'theme'} ? ' active'" th:href="@{/admin/visual-pages(tab='theme')}">主题设置</a>
             <a class="item" th:classappend="${activeTab == 'permission'} ? ' active'" th:href="@{/admin/visual-pages(tab='permission')}">用户权限</a>
             <a class="item" th:classappend="${activeTab == 'stats'} ? ' active'" th:href="@{/admin/visual-pages(tab='stats')}">数据统计</a>
@@ -29,7 +28,7 @@
             <div>
                 <div class="title" th:switch="${activeTab}">
                     <span th:case="'dashboard'">管理仪表盘</span>
-                    <span th:case="'page'">页面管理</span>
+                    <span th:case="'page'">页面与导航</span>
                     <span th:case="'content'">内容管理</span>
                     <span th:case="'module'">模块管理</span>
                     <span th:case="'assets'">资源库</span>
@@ -65,7 +64,7 @@
                     <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='page')}">去页面管理</a>
                     <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='content')}">去内容管理</a>
                     <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='module')}">去模块管理</a>
-                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='navigation')}">去导航管理</a>
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='page')}">去导航管理</a>
                     <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='assets')}">去资源库</a>
                 </div>
             </section>
@@ -189,9 +188,9 @@
             </section>
         </section>
 
-        <section th:if="${activeTab == 'navigation'}">
-            <section class="card admin-light-card">
-                <div class="head"><h2>菜单管理（树状结构）</h2><form class="admin-inline-form js-submit-lock" th:action="@{/admin/menus/create}" method="post"><input type="text" name="menuName" placeholder="新菜单名称"><button class="primary" type="submit">新增菜单</button></form></div>
+        <section th:if="${activeTab == 'page'}">
+            <section class="card admin-light-card" style="margin-top:16px;">
+                <div class="head"><h2>导航管理（菜单树）</h2><form class="admin-inline-form js-submit-lock" th:action="@{/admin/menus/create}" method="post"><input type="text" name="menuName" placeholder="新菜单名称"><button class="primary" type="submit">新增菜单</button></form></div>
                 <form id="menuBatchForm" class="js-submit-lock" th:action="@{/admin/menus/batch}" method="post">
                     <div class="muted">拖拽可调整层级和排序；拖到目标右侧为子菜单，左侧为同级菜单。</div>
                     <div class="admin-list-wrap" style="margin-top:10px;">
