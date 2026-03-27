@@ -1418,3 +1418,66 @@ select:focus {
         width: 100%;
     }
 }
+
+.admin-light-card {
+    background: #ffffff;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dashboard-metric {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+}
+
+.dashboard-metric span {
+    color: #334155;
+    font-size: 13px;
+}
+
+.dashboard-metric strong {
+    display: block;
+    margin-top: 8px;
+    color: #0f172a;
+    font-size: 28px;
+}
+
+.dashboard-quick-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.danger-btn {
+    border-color: #fca5a5 !important;
+    color: #b91c1c !important;
+}
+
+.admin-proto-menu a.item {
+    display: block;
+}
+
+.admin-list-table details > summary {
+    cursor: pointer;
+    color: #1e40af;
+    font-weight: 600;
+}
+
+@media (max-width: 1300px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+}

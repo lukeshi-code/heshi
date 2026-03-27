@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -9,26 +9,38 @@
 <body class="admin-proto-body">
 <div class="admin-proto-shell">
     <aside class="admin-proto-sidebar">
-        <div class="admin-proto-logo">网站后台管理</div>
+        <div class="admin-proto-logo" th:text="${settingMap['theme.logoText'] != null and !#strings.isEmpty(settingMap['theme.logoText']) ? settingMap['theme.logoText'] : '网站后台管理'}">网站后台管理</div>
         <div class="admin-proto-menu">
-            <div class="item">仪表盘</div>
-            <div class="item active">页面管理</div>
-            <div class="item">内容管理</div>
-            <div class="item">模块管理</div>
-            <div class="item">资源库</div>
-            <div class="item">导航管理</div>
-            <div class="item">主题设置</div>
-            <div class="item">用户权限</div>
-            <div class="item">数据统计</div>
-            <div class="item">系统设置</div>
+            <a class="item" th:classappend="${activeTab == 'dashboard'} ? ' active'" th:href="@{/admin/visual-pages(tab='dashboard')}">仪表盘</a>
+            <a class="item" th:classappend="${activeTab == 'page'} ? ' active'" th:href="@{/admin/visual-pages(tab='page')}">页面管理</a>
+            <a class="item" th:classappend="${activeTab == 'content'} ? ' active'" th:href="@{/admin/visual-pages(tab='content')}">内容管理</a>
+            <a class="item" th:classappend="${activeTab == 'module'} ? ' active'" th:href="@{/admin/visual-pages(tab='module')}">模块管理</a>
+            <a class="item" th:classappend="${activeTab == 'assets'} ? ' active'" th:href="@{/admin/visual-pages(tab='assets')}">资源库</a>
+            <a class="item" th:classappend="${activeTab == 'navigation'} ? ' active'" th:href="@{/admin/visual-pages(tab='navigation')}">导航管理</a>
+            <a class="item" th:classappend="${activeTab == 'theme'} ? ' active'" th:href="@{/admin/visual-pages(tab='theme')}">主题设置</a>
+            <a class="item" th:classappend="${activeTab == 'permission'} ? ' active'" th:href="@{/admin/visual-pages(tab='permission')}">用户权限</a>
+            <a class="item" th:classappend="${activeTab == 'stats'} ? ' active'" th:href="@{/admin/visual-pages(tab='stats')}">数据统计</a>
+            <a class="item" th:classappend="${activeTab == 'system'} ? ' active'" th:href="@{/admin/visual-pages(tab='system')}">系统设置</a>
         </div>
     </aside>
 
     <main class="admin-proto-main">
         <header class="admin-proto-header">
             <div>
-                <div class="title">页面管理 / 可视化装修</div>
-                <div class="desc">菜单管理、模块配置、模板复用都在同一工作台完成</div>
+                <div class="title" th:switch="${activeTab}">
+                    <span th:case="'dashboard'">管理仪表盘</span>
+                    <span th:case="'page'">页面管理</span>
+                    <span th:case="'content'">内容管理</span>
+                    <span th:case="'module'">模块管理</span>
+                    <span th:case="'assets'">资源库</span>
+                    <span th:case="'navigation'">导航管理</span>
+                    <span th:case="'theme'">主题设置</span>
+                    <span th:case="'permission'">用户权限</span>
+                    <span th:case="'stats'">数据统计</span>
+                    <span th:case="'system'">系统设置</span>
+                    <span th:case="*">后台管理</span>
+                </div>
+                <div class="desc">已扩展为完整子模块后台，支持内容、资源、主题、系统和统计管理。</div>
             </div>
             <div class="admin-proto-header-actions">
                 <a class="secondary button-link" th:href="@{/admin/users}">用户管理</a>
@@ -39,202 +51,183 @@
         <div class="notice" th:if="${successMessage}" th:text="${successMessage}"></div>
         <div class="error" th:if="${errorMessage}" th:text="${errorMessage}" style="margin-top: 12px;"></div>
 
-        <section class="admin-proto-grid">
-            <div class="admin-proto-card">
-                <div class="head">
-                    <h2>菜单管理（树状结构）</h2>
-                    <form class="admin-inline-form js-submit-lock" th:action="@{/admin/menus/create}" method="post">
-                        <input type="text" name="menuName" placeholder="新菜单名称">
-                        <button class="primary" type="submit">新增菜单</button>
+        <section th:if="${activeTab == 'dashboard'}">
+            <div class="dashboard-grid">
+                <div class="dashboard-metric"><span>用户总数</span><strong th:text="${metricUserCount}">0</strong></div>
+                <div class="dashboard-metric"><span>文章总数</span><strong th:text="${metricArticleCount}">0</strong></div>
+                <div class="dashboard-metric"><span>页面总数</span><strong th:text="${metricPageCount}">0</strong></div>
+                <div class="dashboard-metric"><span>模块总数</span><strong th:text="${metricModuleCount}">0</strong></div>
+                <div class="dashboard-metric"><span>菜单总数</span><strong th:text="${metricMenuCount}">0</strong></div>
+            </div>
+            <section class="card admin-light-card" style="margin-top:16px;">
+                <div class="section-head"><h2>快速入口</h2></div>
+                <div class="dashboard-quick-links">
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='page')}">去页面管理</a>
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='content')}">去内容管理</a>
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='module')}">去模块管理</a>
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='navigation')}">去导航管理</a>
+                    <a class="secondary button-link" th:href="@{/admin/visual-pages(tab='assets')}">去资源库</a>
+                </div>
+            </section>
+        </section>
+
+        <section th:if="${activeTab == 'page'}">
+            <div class="admin-list-wrap">
+                <table class="admin-list-table">
+                    <thead><tr><th>页面</th><th>导航</th><th>布局</th><th>访问等级</th><th>操作</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${pages}">
+                        <td><strong th:text="${p.pageName}">首页</strong><div class="muted" th:text="${p.routePath}">/</div></td>
+                        <td th:text="${p.navVisible ? '显示' : '隐藏'}">显示</td>
+                        <td th:text="${p.layoutMode}">SIMPLE</td>
+                        <td th:text="${pageLevelByPath[p.routePath] != null ? pageLevelByPath[p.routePath].label : '普通用户'}">普通用户</td>
+                        <td>
+                            <details>
+                                <summary>编辑</summary>
+                                <form class="auth-form js-submit-lock" th:action="@{'/admin/visual-pages/' + ${p.id}}" method="post" style="margin-top:10px;">
+                                    <input type="text" name="pageName" th:value="${p.pageName}" required>
+                                    <div class="grid two" style="margin:0;">
+                                        <label>导航排序<input type="number" name="navOrder" th:value="${p.navOrder}"></label>
+                                        <label>布局模式
+                                            <select name="layoutMode"><option th:each="lm : ${allLayoutModes}" th:value="${lm.name()}" th:selected="${p.layoutMode == lm}" th:text="${lm.name()}"></option></select>
+                                        </label>
+                                    </div>
+                                    <div class="grid two" style="margin:0;">
+                                        <label>导航显示<select name="navVisible"><option value="true" th:selected="${p.navVisible}">显示</option><option value="false" th:selected="${!p.navVisible}">隐藏</option></select></label>
+                                        <label>页面启用<select name="enabled"><option value="true" th:selected="${p.enabled}">启用</option><option value="false" th:selected="${!p.enabled}">停用</option></select></label>
+                                    </div>
+                                    <label>访问等级<select name="requiredLevel"><option th:each="lv : ${allLevels}" th:value="${lv.name()}" th:selected="${pageLevelByPath[p.routePath] != null and pageLevelByPath[p.routePath] == lv}" th:text="${lv.label}"></option></select></label>
+                                    <label>Banner 标题<input type="text" name="heroTitle" th:value="${p.heroTitle}"></label>
+                                    <label>Banner 副标题<textarea name="heroSubtitle" rows="2" th:text="${p.heroSubtitle}"></textarea></label>
+                                    <label>Banner 图<input type="text" name="bannerImageUrl" th:value="${p.bannerImageUrl}"></label>
+                                    <div class="grid two" style="margin:0;"><input type="text" name="heroPrimaryButtonText" th:value="${p.heroPrimaryButtonText}" placeholder="主按钮文案"><input type="text" name="heroPrimaryButtonLink" th:value="${p.heroPrimaryButtonLink}" placeholder="主按钮链接"></div>
+                                    <div class="grid two" style="margin:0;"><input type="text" name="heroSecondaryButtonText" th:value="${p.heroSecondaryButtonText}" placeholder="次按钮文案"><input type="text" name="heroSecondaryButtonLink" th:value="${p.heroSecondaryButtonLink}" placeholder="次按钮链接"></div>
+                                    <div class="button-row" style="margin-top:10px;"><button class="primary" type="submit">保存页面配置</button><button class="secondary" type="submit" formaction="#" th:formaction="@{'/admin/visual-pages/' + ${p.id} + '/rollback-latest'}">回滚最近快照</button></div>
+                                </form>
+                            </details>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section th:if="${activeTab == 'content'}">
+            <section class="card admin-light-card">
+                <div class="section-head"><h2>内容管理</h2><a class="primary button-link" th:href="@{/articles/new}">发布新文章</a></div>
+                <div class="admin-list-wrap">
+                    <table class="admin-list-table">
+                        <thead><tr><th>标题</th><th>作者</th><th>发布时间</th><th>操作</th></tr></thead>
+                        <tbody>
+                        <tr th:each="article : ${articles}">
+                            <td><strong th:text="${article.title}">标题</strong></td>
+                            <td th:text="${article.author != null ? article.author.displayName : '-'}">管理员</td>
+                            <td th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}">2026-03-27 18:00</td>
+                            <td>
+                                <a class="secondary button-link" th:href="@{'/articles/' + ${article.id}}" target="_blank">查看</a>
+                                <form class="admin-inline-form js-submit-lock" th:action="@{'/admin/articles/' + ${article.id} + '/delete'}" method="post" style="display:inline-flex;"><button class="secondary danger-btn" type="submit" onclick="return confirm('确认删除这篇文章吗？')">删除</button></form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(articles)}"><td colspan="4" class="muted">暂无文章，先去发布一篇内容。</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section th:if="${activeTab == 'module'}">
+            <section class="admin-proto-grid">
+                <div class="admin-proto-card">
+                    <h2>模块新增</h2>
+                    <form class="auth-form js-submit-lock" th:action="@{/admin/modules/create}" method="post">
+                        <label>所属页面<select name="pagePath"><option th:each="p : ${pages}" th:value="${p.routePath}" th:text="${p.pageName + ' (' + p.routePath + ')'}"></option></select></label>
+                        <label>模块名称<input type="text" name="title" placeholder="例如：品牌介绍"></label>
+                        <label>模块类型<select name="moduleType"><option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:text="${mt.label}"></option></select></label>
+                        <button class="primary" type="submit">新增模块</button>
                     </form>
                 </div>
+                <div class="admin-proto-card">
+                    <h2>模板说明</h2>
+                    <p class="muted">支持模块模板保存和跨页面复用。先保存模板，再在其它模块一键套用。</p>
+                    <div class="list"><div th:each="t : ${moduleTemplates}"><strong th:text="${t.templateName}">模板名</strong><span th:text="${t.pagePath}">/</span></div></div>
+                </div>
+            </section>
+            <section class="card admin-light-card" style="margin-top:16px;">
+                <div class="section-head"><h2>模块管理</h2></div>
+                <div class="module-config-list">
+                    <div class="module-config-card" th:each="m : ${allModules}">
+                        <div class="section-head"><strong th:text="${m.title + ' (' + m.pagePath + ')'}"></strong><span class="badge" th:text="${m.enabled ? '已启用' : '未启用'}"></span></div>
+                        <form class="auth-form js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/advanced'}" method="post">
+                            <div class="grid two" style="margin:0;"><input type="text" name="title" th:value="${m.title}" required><select name="moduleType"><option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:selected="${m.moduleType == mt}" th:text="${mt.label}"></option></select></div>
+                            <textarea name="content" rows="2" th:text="${m.content}" placeholder="模块内容"></textarea>
+                            <div class="grid two" style="margin:0;"><input type="text" name="buttonText" th:value="${m.buttonText}" placeholder="按钮文案"><input type="text" name="buttonLink" th:value="${m.buttonLink}" placeholder="按钮链接"></div>
+                            <div class="grid two" style="margin:0;"><select name="dataSourceType"><option th:each="ds : ${allDataSourceTypes}" th:value="${ds.name()}" th:selected="${m.dataSourceType == ds}" th:text="${ds.label}"></option></select><select name="textAlign"><option value="left" th:selected="${m.textAlign == 'left'}">左对齐</option><option value="center" th:selected="${m.textAlign == 'center'}">居中</option><option value="right" th:selected="${m.textAlign == 'right'}">右对齐</option></select></div>
+                            <div class="grid three" style="margin:0;"><input type="text" name="backgroundColor" th:value="${m.backgroundColor}" placeholder="背景色"><input type="text" name="fontColor" th:value="${m.fontColor}" placeholder="字体色"><input type="number" name="sortOrder" min="1" th:value="${m.sortOrder}" placeholder="排序"></div>
+                            <div class="grid two" style="margin:0;"><input type="text" name="backgroundImageUrl" th:value="${m.backgroundImageUrl}" placeholder="背景图 URL"><input type="text" name="fontSize" th:value="${m.fontSize}" placeholder="字体大小"></div>
+                            <select name="enabled"><option value="true" th:selected="${m.enabled}">显示</option><option value="false" th:selected="${!m.enabled}">隐藏</option></select>
+                            <button class="primary" type="submit">保存模块</button>
+                        </form>
+                        <div class="grid two" style="margin-top:10px;">
+                            <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/save-template'}" method="post"><input type="text" name="templateName" th:value="${m.templateName}" placeholder="模板名"><button class="secondary" type="submit">保存模板</button></form>
+                            <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/apply-template'}" method="post"><select name="sourceTemplateId"><option th:each="t : ${moduleTemplates}" th:value="${t.id}" th:text="${t.templateName + ' / ' + t.pagePath}"></option></select><button class="secondary" type="submit">套用模板</button></form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section th:if="${activeTab == 'assets'}">
+            <section class="card admin-light-card"><div class="section-head"><h2>资源库上传</h2></div><form class="auth-form js-submit-lock" th:action="@{/admin/resources/upload}" method="post" enctype="multipart/form-data"><label>上传文件<input type="file" name="file" required></label><button class="primary" type="submit">上传资源</button></form></section>
+            <section class="card admin-light-card" style="margin-top:16px;">
+                <div class="section-head"><h2>最近资源文件</h2></div>
+                <div class="admin-list-wrap">
+                    <table class="admin-list-table"><thead><tr><th>文件名</th><th>大小</th><th>更新时间</th><th>链接</th></tr></thead><tbody>
+                        <tr th:each="f : ${assetFiles}"><td th:text="${f.name}">test.png</td><td th:text="${f.sizeKb + ' KB'}">12 KB</td><td th:text="${#temporals.format(f.modifiedAt, 'yyyy-MM-dd HH:mm')}">2026-03-27 19:00</td><td><a class="secondary button-link" th:href="${f.url}" target="_blank">打开</a></td></tr>
+                        <tr th:if="${#lists.isEmpty(assetFiles)}"><td colspan="4" class="muted">暂无上传文件。</td></tr>
+                    </tbody></table>
+                </div>
+            </section>
+        </section>
+
+        <section th:if="${activeTab == 'navigation'}">
+            <section class="card admin-light-card">
+                <div class="head"><h2>菜单管理（树状结构）</h2><form class="admin-inline-form js-submit-lock" th:action="@{/admin/menus/create}" method="post"><input type="text" name="menuName" placeholder="新菜单名称"><button class="primary" type="submit">新增菜单</button></form></div>
                 <form id="menuBatchForm" class="js-submit-lock" th:action="@{/admin/menus/batch}" method="post">
-                    <div class="muted">拖拽可调整排序；拖到目标菜单右侧可变成其子菜单，拖到左侧恢复一级菜单。</div>
+                    <div class="muted">拖拽可调整层级和排序；拖到目标右侧为子菜单，左侧为同级菜单。</div>
                     <div class="admin-list-wrap" style="margin-top:10px;">
-                        <table class="admin-list-table">
-                            <thead>
-                            <tr>
-                                <th>菜单名称</th>
-                                <th>父级</th>
-                                <th>跳转类型</th>
-                                <th>内部页面</th>
-                                <th>外部链接</th>
-                                <th>显示</th>
-                                <th>打开方式</th>
-                                <th>排序</th>
-                            </tr>
-                            </thead>
-                            <tbody id="menuTbody">
+                        <table class="admin-list-table"><thead><tr><th>菜单名称</th><th>父级</th><th>跳转类型</th><th>内部页面</th><th>外部链接</th><th>显示</th><th>打开方式</th><th>排序</th></tr></thead><tbody id="menuTbody">
                             <tr th:each="m : ${menuItems}" class="menu-row" draggable="true" th:attr="data-id=${m.id}">
-                                <td>
-                                    <input type="hidden" name="menuId" th:value="${m.id}">
-                                    <input type="text" name="menuName" th:value="${m.menuName}" required>
-                                </td>
-                                <td>
-                                    <select class="menu-parent-select" name="parentId">
-                                        <option value="0" th:selected="${m.parentId == null}">一级菜单</option>
-                                        <option th:each="p : ${menuItems}" th:if="${p.id != m.id}" th:value="${p.id}" th:selected="${m.parentId == p.id}" th:text="${p.menuName}"></option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="linkType">
-                                        <option th:each="linkTypeItem : ${T(org.example.model.LinkType).values()}" th:value="${linkTypeItem.name()}" th:selected="${m.linkType == linkTypeItem}" th:text="${linkTypeItem.label}"></option>
-                                    </select>
-                                </td>
+                                <td><input type="hidden" name="menuId" th:value="${m.id}"><input type="text" name="menuName" th:value="${m.menuName}" required></td>
+                                <td><select class="menu-parent-select" name="parentId"><option value="0" th:selected="${m.parentId == null}">一级菜单</option><option th:each="p : ${menuItems}" th:if="${p.id != m.id}" th:value="${p.id}" th:selected="${m.parentId == p.id}" th:text="${p.menuName}"></option></select></td>
+                                <td><select name="linkType"><option th:each="linkTypeItem : ${allLinkTypes}" th:value="${linkTypeItem.name()}" th:selected="${m.linkType == linkTypeItem}" th:text="${linkTypeItem.label}"></option></select></td>
                                 <td><input type="text" name="internalPath" th:value="${m.internalPath}" placeholder="/about"></td>
                                 <td><input type="text" name="externalUrl" th:value="${m.externalUrl}" placeholder="https://example.com"></td>
-                                <td>
-                                    <select name="visible">
-                                        <option value="true" th:selected="${m.visible}">显示</option>
-                                        <option value="false" th:selected="${!m.visible}">隐藏</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="openInNewWindow">
-                                        <option value="false" th:selected="${!m.openInNewWindow}">当前页</option>
-                                        <option value="true" th:selected="${m.openInNewWindow}">新窗口</option>
-                                    </select>
-                                </td>
+                                <td><select name="visible"><option value="true" th:selected="${m.visible}">显示</option><option value="false" th:selected="${!m.visible}">隐藏</option></select></td>
+                                <td><select name="openInNewWindow"><option value="false" th:selected="${!m.openInNewWindow}">当前页</option><option value="true" th:selected="${m.openInNewWindow}">新窗口</option></select></td>
                                 <td><input class="menu-sort-input" type="number" name="sortOrder" min="1" th:value="${m.sortOrder}"></td>
                             </tr>
-                            </tbody>
-                        </table>
+                        </tbody></table>
                     </div>
-                    <div class="button-row" style="margin-top:12px;">
-                        <button class="primary" type="submit">保存菜单配置</button>
-                    </div>
+                    <div class="button-row" style="margin-top:12px;"><button class="primary" type="submit">保存菜单配置</button></div>
                 </form>
-            </div>
-
-            <div class="admin-proto-card">
-                <h2>模块新增</h2>
-                <form class="auth-form js-submit-lock" th:action="@{/admin/modules/create}" method="post">
-                    <label>所属页面
-                        <select name="pagePath">
-                            <option th:each="p : ${pages}" th:value="${p.routePath}" th:text="${p.pageName + ' (' + p.routePath + ')'}"></option>
-                        </select>
-                    </label>
-                    <label>模块名称
-                        <input type="text" name="title" placeholder="例如：品牌介绍">
-                    </label>
-                    <label>模块类型
-                        <select name="moduleType">
-                            <option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:text="${mt.label}"></option>
-                        </select>
-                    </label>
-                    <button class="primary" type="submit">新增模块</button>
-                </form>
-            </div>
+            </section>
         </section>
 
-        <section class="card" style="margin-top:16px;">
-            <div class="section-head">
-                <h2>模块管理（样式配置 / 数据源 / 模板复用）</h2>
-            </div>
-            <div class="module-config-list">
-                <div class="module-config-card" th:each="m : ${allModules}">
-                    <div class="section-head">
-                        <strong th:text="${m.title + '  (' + m.pagePath + ')'}"></strong>
-                        <span class="badge" th:text="${m.enabled ? '已启用' : '未启用'}"></span>
-                    </div>
-                    <form class="auth-form js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/advanced'}" method="post">
-                        <div class="grid two" style="margin:0;">
-                            <label>模块名称
-                                <input type="text" name="title" th:value="${m.title}" required>
-                            </label>
-                            <label>模块类型
-                                <select name="moduleType">
-                                    <option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:selected="${m.moduleType == mt}" th:text="${mt.label}"></option>
-                                </select>
-                            </label>
-                        </div>
-                        <label>模块内容
-                            <textarea name="content" rows="2" th:text="${m.content}"></textarea>
-                        </label>
-                        <div class="grid two" style="margin:0;">
-                            <label>按钮文案
-                                <input type="text" name="buttonText" th:value="${m.buttonText}">
-                            </label>
-                            <label>按钮链接
-                                <input type="text" name="buttonLink" th:value="${m.buttonLink}">
-                            </label>
-                        </div>
-                        <div class="grid two" style="margin:0;">
-                            <label>数据来源
-                                <select name="dataSourceType">
-                                    <option th:each="ds : ${allDataSourceTypes}" th:value="${ds.name()}" th:selected="${m.dataSourceType == ds}" th:text="${ds.label}"></option>
-                                </select>
-                            </label>
-                            <label>对齐方式
-                                <select name="textAlign">
-                                    <option value="left" th:selected="${m.textAlign == 'left'}">左对齐</option>
-                                    <option value="center" th:selected="${m.textAlign == 'center'}">居中</option>
-                                    <option value="right" th:selected="${m.textAlign == 'right'}">右对齐</option>
-                                </select>
-                            </label>
-                        </div>
-                        <div class="grid two" style="margin:0;">
-                            <label>背景色
-                                <input type="text" name="backgroundColor" th:value="${m.backgroundColor}">
-                            </label>
-                            <label>背景图 URL
-                                <input type="text" name="backgroundImageUrl" th:value="${m.backgroundImageUrl}">
-                            </label>
-                        </div>
-                        <div class="grid three" style="margin:0;">
-                            <label>字体颜色
-                                <input type="text" name="fontColor" th:value="${m.fontColor}">
-                            </label>
-                            <label>字体大小
-                                <input type="text" name="fontSize" th:value="${m.fontSize}">
-                            </label>
-                            <label>排序
-                                <input type="number" name="sortOrder" min="1" th:value="${m.sortOrder}">
-                            </label>
-                        </div>
-                        <label>显示状态
-                            <select name="enabled">
-                                <option value="true" th:selected="${m.enabled}">显示</option>
-                                <option value="false" th:selected="${!m.enabled}">隐藏</option>
-                            </select>
-                        </label>
-                        <button class="primary" type="submit">保存模块配置</button>
-                    </form>
-                    <div class="grid two" style="margin-top:10px;">
-                        <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/save-template'}" method="post">
-                            <label>模板名称
-                                <input type="text" name="templateName" th:value="${m.templateName}" placeholder="模板名">
-                            </label>
-                            <button class="secondary" type="submit">保存模板</button>
-                        </form>
-                        <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/apply-template'}" method="post">
-                            <label>套用模板
-                                <select name="sourceTemplateId">
-                                    <option th:each="t : ${moduleTemplates}" th:value="${t.id}" th:text="${t.templateName + ' / ' + t.pagePath}"></option>
-                                </select>
-                            </label>
-                            <button class="secondary" type="submit">一键替换模块</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <section th:if="${activeTab == 'theme'}"><section class="card admin-light-card"><div class="section-head"><h2>主题设置</h2></div><form class="auth-form js-submit-lock" th:action="@{/admin/theme/save}" method="post"><label>主色<input type="text" name="primaryColor" th:value="${settingMap['theme.primaryColor']}" placeholder="#0f172a"></label><label>强调色<input type="text" name="accentColor" th:value="${settingMap['theme.accentColor']}" placeholder="#1d4ed8"></label><label>后台 Logo 文案<input type="text" name="logoText" th:value="${settingMap['theme.logoText']}"></label><label>默认 Banner 图 URL<input type="text" name="bannerUrl" th:value="${settingMap['theme.bannerUrl']}"></label><button class="primary" type="submit">保存主题设置</button></form></section></section>
+
+        <section th:if="${activeTab == 'permission'}"><section class="card admin-light-card"><div class="section-head"><h2>用户权限与页面等级</h2><a class="secondary button-link" th:href="@{/admin/users}">去用户角色管理</a></div><div class="admin-list-wrap"><table class="admin-list-table"><thead><tr><th>页面路径</th><th>页面名称</th><th>访问等级</th></tr></thead><tbody><tr th:each="p : ${pages}"><td th:text="${p.routePath}">/</td><td th:text="${p.pageName}">首页</td><td th:text="${pageLevelByPath[p.routePath] != null ? pageLevelByPath[p.routePath].label : '普通用户'}">普通用户</td></tr></tbody></table></div></section></section>
+
+        <section th:if="${activeTab == 'stats'}">
+            <section class="dashboard-grid">
+                <div class="dashboard-metric"><span>用户总数</span><strong th:text="${metricUserCount}">0</strong></div>
+                <div class="dashboard-metric"><span>文章总数</span><strong th:text="${metricArticleCount}">0</strong></div>
+                <div class="dashboard-metric"><span>页面总数</span><strong th:text="${metricPageCount}">0</strong></div>
+                <div class="dashboard-metric"><span>模块总数</span><strong th:text="${metricModuleCount}">0</strong></div>
+            </section>
+            <section class="card admin-light-card" style="margin-top:16px;"><div class="section-head"><h2>最近操作日志</h2></div><div class="list"><div th:if="${logs == null or #lists.isEmpty(logs)}"><strong>暂无日志</strong><span>进行配置变更后会自动记录。</span></div><div th:each="log : ${logs}"><strong th:text="${log.action + ' / ' + log.target}"></strong><span th:text="${log.operatorName + ' @ ' + #temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></div></div></section>
         </section>
 
-        <section class="card" style="margin-top:16px;">
-            <div class="section-head">
-                <h2>最近操作日志</h2>
-            </div>
-            <div class="list">
-                <div th:if="${logs == null or #lists.isEmpty(logs)}">
-                    <strong>暂无日志</strong>
-                    <span>进行配置变更后会自动记录。</span>
-                </div>
-                <div th:each="log : ${logs}">
-                    <strong th:text="${log.action + ' / ' + log.target}"></strong>
-                    <span th:text="${log.operatorName + ' @ ' + #temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                </div>
-            </div>
-        </section>
+        <section th:if="${activeTab == 'system'}"><section class="card admin-light-card"><div class="section-head"><h2>系统设置</h2></div><form class="auth-form js-submit-lock" th:action="@{/admin/system/save}" method="post"><label>站点名称<input type="text" name="siteTitle" th:value="${settingMap['system.siteTitle']}"></label><label>页脚文案<input type="text" name="footerText" th:value="${settingMap['system.footerText']}"></label><label>行情数据源说明<input type="text" name="stockDataProvider" th:value="${settingMap['system.stockDataProvider']}"></label><div class="grid two" style="margin:0;"><label>维护模式<select name="maintenanceMode"><option value="true" th:selected="${settingMap['system.maintenanceMode'] == 'true'}">开启</option><option value="false" th:selected="${settingMap['system.maintenanceMode'] != 'true'}">关闭</option></select></label><label>允许注册<select name="allowRegister"><option value="true" th:selected="${settingMap['system.allowRegister'] != 'false'}">允许</option><option value="false" th:selected="${settingMap['system.allowRegister'] == 'false'}">禁止</option></select></label></div><button class="primary" type="submit">保存系统设置</button></form></section></section>
     </main>
 </div>
 

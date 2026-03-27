@@ -6,6 +6,7 @@ import org.example.repository.UserAccountRepository;
 import org.example.service.HomeModuleConfigService;
 import org.example.service.PagePermissionService;
 import org.example.service.SiteMenuService;
+import org.example.service.SiteSettingService;
 import org.example.service.SitePageConfigService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,19 +23,22 @@ public class DataInitializer implements CommandLineRunner {
     private final SitePageConfigService sitePageConfigService;
     private final HomeModuleConfigService homeModuleConfigService;
     private final SiteMenuService siteMenuService;
+    private final SiteSettingService siteSettingService;
 
     public DataInitializer(UserAccountRepository userAccountRepository,
                            PasswordEncoder passwordEncoder,
                            PagePermissionService pagePermissionService,
                            SitePageConfigService sitePageConfigService,
                            HomeModuleConfigService homeModuleConfigService,
-                           SiteMenuService siteMenuService) {
+                           SiteMenuService siteMenuService,
+                           SiteSettingService siteSettingService) {
         this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
         this.pagePermissionService = pagePermissionService;
         this.sitePageConfigService = sitePageConfigService;
         this.homeModuleConfigService = homeModuleConfigService;
         this.siteMenuService = siteMenuService;
+        this.siteSettingService = siteSettingService;
     }
 
     @Override
@@ -50,6 +54,9 @@ public class DataInitializer implements CommandLineRunner {
         }
         if (siteMenuService != null) {
             siteMenuService.ensureDefaults();
+        }
+        if (siteSettingService != null) {
+            siteSettingService.ensureDefaults();
         }
         if (userAccountRepository.existsByUsername("admin")) {
             return;

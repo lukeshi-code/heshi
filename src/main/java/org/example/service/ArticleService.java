@@ -7,6 +7,7 @@ import org.example.repository.ArticleCommentRepository;
 import org.example.repository.ArticleRepository;
 import org.example.web.ArticleForm;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -56,5 +57,11 @@ public class ArticleService {
         comment.setAuthor(author);
         comment.setContent(content);
         articleCommentRepository.save(comment);
+    }
+
+    @Transactional
+    public void deleteArticle(Long articleId) {
+        articleCommentRepository.deleteByArticleId(articleId);
+        articleRepository.deleteById(articleId);
     }
 }
