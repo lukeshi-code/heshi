@@ -110,6 +110,7 @@ public class AdminController {
     @PostMapping("/admin/users/{id}/roles")
     public String updateRoles(@PathVariable Long id,
                               @RequestParam(value = "roles", required = false) Set<Role> roles,
+                              @RequestParam(value = "redirectTab", required = false) String redirectTab,
                               Authentication authentication,
                               RedirectAttributes redirectAttributes) {
         Set<Role> nextRoles = roles == null || roles.isEmpty() ? new HashSet<Role>() : new HashSet<Role>(roles);
@@ -119,12 +120,12 @@ public class AdminController {
             UserAccount current = userAccountService.getByUsername(authentication.getName());
             if (current.getId().equals(id) && !nextRoles.contains(Role.ROLE_ADMIN)) {
                 redirectAttributes.addFlashAttribute("errorMessage", "不能移除自己的管理员权限。");
-                return "redirect:/admin/users";
+                return redirectByTab(redirectTab);
             }
         }
         userAccountService.updateRoles(id, nextRoles);
         redirectAttributes.addFlashAttribute("successMessage", "用户角色已更新。");
-        return "redirect:/admin/users";
+        return redirectByTab(redirectTab);
     }
 
     @GetMapping("/admin/page-permissions")
@@ -158,6 +159,8 @@ public class AdminController {
         model.addAttribute("metricPageCount", sitePageConfigRepository.count());
         model.addAttribute("metricModuleCount", homeModuleConfigRepository.count());
         model.addAttribute("metricMenuCount", siteMenuItemRepository.count());
+        model.addAttribute("users", userAccountService.findAllUsers());
+        model.addAttribute("allRoles", Role.values());
         return "admin-visual-pages";
     }
 
@@ -413,6 +416,13 @@ public class AdminController {
 
     private String valueOrEmpty(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private String redirectByTab(String tab) {
+        if (tab != null && !tab.trim().isEmpty()) {
+            return "redirect:/admin/visual-pages?tab=" + tab.trim();
+        }
+        return "redirect:/admin/users";
     }
 
     private String stringValue(Object v, String def) {

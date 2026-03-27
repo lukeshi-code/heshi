@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -43,7 +43,7 @@
                 <div class="desc">已扩展为完整子模块后台，支持内容、资源、主题、系统和统计管理。</div>
             </div>
             <div class="admin-proto-header-actions">
-                <a class="secondary button-link" th:href="@{/admin/users}">用户管理</a>
+                
                 <a class="secondary button-link" th:href="@{/}">返回首页</a>
             </div>
         </header>
@@ -215,7 +215,71 @@
 
         <section th:if="${activeTab == 'theme'}"><section class="card admin-light-card"><div class="section-head"><h2>主题设置</h2></div><form class="auth-form js-submit-lock" th:action="@{/admin/theme/save}" method="post"><label>主色<input type="text" name="primaryColor" th:value="${settingMap['theme.primaryColor']}" placeholder="#0f172a"></label><label>强调色<input type="text" name="accentColor" th:value="${settingMap['theme.accentColor']}" placeholder="#1d4ed8"></label><label>后台 Logo 文案<input type="text" name="logoText" th:value="${settingMap['theme.logoText']}"></label><label>默认 Banner 图 URL<input type="text" name="bannerUrl" th:value="${settingMap['theme.bannerUrl']}"></label><button class="primary" type="submit">保存主题设置</button></form></section></section>
 
-        <section th:if="${activeTab == 'permission'}"><section class="card admin-light-card"><div class="section-head"><h2>用户权限与页面等级</h2><a class="secondary button-link" th:href="@{/admin/users}">去用户角色管理</a></div><div class="admin-list-wrap"><table class="admin-list-table"><thead><tr><th>页面路径</th><th>页面名称</th><th>访问等级</th></tr></thead><tbody><tr th:each="p : ${pages}"><td th:text="${p.routePath}">/</td><td th:text="${p.pageName}">首页</td><td th:text="${pageLevelByPath[p.routePath] != null ? pageLevelByPath[p.routePath].label : '普通用户'}">普通用户</td></tr></tbody></table></div></section></section>
+        <section th:if="${activeTab == 'permission'}">
+            <section class="card admin-light-card">
+                <div class="section-head">
+                    <h2>用户权限管理</h2>
+                </div>
+                <div class="admin-list-wrap">
+                    <table class="admin-list-table">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色权限</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="u : ${users}">
+                            <td>
+                                <strong th:text="${u.displayName != null and !#strings.isEmpty(u.displayName) ? u.displayName : u.username}">用户名</strong>
+                                <div class="muted" th:text="${u.username}">username</div>
+                            </td>
+                            <td th:text="${u.email}">-</td>
+                            <td>
+                                <form class="admin-inline-form js-submit-lock" th:action="@{'/admin/users/' + ${u.id} + '/roles'}" method="post">
+                                    <input type="hidden" name="redirectTab" value="permission">
+                                    <label class="admin-check" th:each="role : ${allRoles}">
+                                        <input type="checkbox" name="roles" th:value="${role.name()}" th:checked="${u.roles != null and u.roles.contains(role)}">
+                                        <span th:text="${role.name() == 'ROLE_ADMIN' ? '管理员' : (role.name() == 'ROLE_EDITOR' ? '编辑' : '普通用户')}">角色</span>
+                                    </label>
+                                    <button class="secondary" type="submit">保存角色</button>
+                                </form>
+                            </td>
+                            <td>
+                                <span class="muted">角色变更即时生效</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card admin-light-card" style="margin-top:16px;">
+                <div class="section-head">
+                    <h2>页面访问等级</h2>
+                </div>
+                <div class="admin-list-wrap">
+                    <table class="admin-list-table">
+                        <thead>
+                        <tr>
+                            <th>页面路径</th>
+                            <th>页面名称</th>
+                            <th>访问等级</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="p : ${pages}">
+                            <td th:text="${p.routePath}">/</td>
+                            <td th:text="${p.pageName}">首页</td>
+                            <td th:text="${pageLevelByPath[p.routePath] != null ? pageLevelByPath[p.routePath].label : '普通用户'}">普通用户</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
 
         <section th:if="${activeTab == 'stats'}">
             <section class="dashboard-grid">
