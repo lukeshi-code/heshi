@@ -130,6 +130,7 @@ public class AdminController {
                                 @RequestParam(value = "moduleButtonLink", required = false) List<String> moduleButtonLinks,
                                 @RequestParam(value = "moduleEnabled", required = false) List<String> moduleEnabledValues,
                                 @RequestParam(value = "moduleSort", required = false) List<Integer> moduleSorts,
+                                @RequestParam(value = "actionType", required = false, defaultValue = "save") String actionType,
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
         SitePageConfig home = sitePageConfigService.findByRoutePath("/");
@@ -151,7 +152,13 @@ public class AdminController {
             }
         }
         siteOpsService.log(operator(authentication), "UPDATE_HOME_DECOR", "/", "Updated home visual decorator");
-        redirectAttributes.addFlashAttribute("successMessage", "首页装修保存成功。");
+        if ("publish".equalsIgnoreCase(actionType)) {
+            redirectAttributes.addFlashAttribute("successMessage", "页面已发布。");
+        } else if ("draft".equalsIgnoreCase(actionType)) {
+            redirectAttributes.addFlashAttribute("successMessage", "草稿已保存。");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "首页装修保存成功。");
+        }
         return "redirect:/admin/visual-pages";
     }
 
