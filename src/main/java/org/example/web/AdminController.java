@@ -99,14 +99,6 @@ public class AdminController {
         this.siteMenuItemRepository = siteMenuItemRepository;
         this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
     }
-
-    @GetMapping("/admin/users")
-    public String users(Model model) {
-        model.addAttribute("users", userAccountService.findAllUsers());
-        model.addAttribute("allRoles", Role.values());
-        return "admin-users";
-    }
-
     @PostMapping("/admin/users/{id}/roles")
     public String updateRoles(@PathVariable Long id,
                               @RequestParam(value = "roles", required = false) Set<Role> roles,
@@ -422,7 +414,7 @@ public class AdminController {
         if (tab != null && !tab.trim().isEmpty()) {
             return "redirect:/admin/visual-pages?tab=" + tab.trim();
         }
-        return "redirect:/admin/users";
+        return "redirect:/admin/visual-pages?tab=permission";
     }
 
     private String stringValue(Object v, String def) {

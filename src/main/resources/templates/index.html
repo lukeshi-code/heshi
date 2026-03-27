@@ -18,8 +18,7 @@
                th:href="${m.resolvedUrl}"
                th:attr="target=${m.openInNewWindow ? '_blank' : null},rel=${m.openInNewWindow ? 'noopener noreferrer' : null}"
                th:text="${m.menuName}"></a>
-            <a th:if="${adminUser}" th:href="@{/admin/users}">用户管理</a>
-            <a th:if="${adminUser}" th:href="@{/admin/visual-pages}">页面配置</a>
+                        <a th:if="${adminUser}" th:href="@{/admin/visual-pages}">页面配置</a>
             <a th:unless="${authenticated}" th:href="@{/register}">注册</a>
             <a th:unless="${authenticated}" th:href="@{/login}">登录</a>
             <form th:if="${authenticated}" th:action="@{/logout}" method="post">
