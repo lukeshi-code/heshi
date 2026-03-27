@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面等级管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell">
+    <div class="card">
+        <div class="section-head">
+            <h1>页面等级管理</h1>
+            <div>
+                <a class="text-link" th:href="@{/admin/users}">用户管理</a>
+                <a class="text-link" th:href="@{/admin/visual-pages}">可视化页面管理</a>
+                <a class="text-link" th:href="@{/}">返回首页</a>
+            </div>
+        </div>
+        <div class="admin-list-wrap">
+            <table class="admin-list-table">
+                <thead>
+                <tr>
+                    <th>页面名称</th>
+                    <th>路径规则</th>
+                    <th>最低访问等级</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="page : ${pages}">
+                    <td th:text="${page.pageName}"></td>
+                    <td><code th:text="${page.pathPattern}"></code></td>
+                    <td>
+                        <form class="admin-inline-form" th:action="@{'/admin/page-permissions/' + ${page.id}}" method="post">
+                            <select name="requiredLevel">
+                                <option th:each="level : ${allLevels}"
+                                        th:value="${level.name()}"
+                                        th:selected="${level == page.requiredLevel}"
+                                        th:text="${level.name() + ' - ' + level.label}">
+                                </option>
+                            </select>
+                            <button class="primary" type="submit">保存</button>
+                        </form>
+                    </td>
+                    <td><span class="muted">实时生效</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Article</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell narrow">
+    <div class="card">
+        <h1>Publish article</h1>
+        <form th:action="@{/articles}" th:object="${articleForm}" method="post" enctype="multipart/form-data" class="auth-form">
+            <label>Title<input type="text" th:field="*{title}" required></label>
+            <label>Content<textarea th:field="*{content}" rows="10" required></textarea></label>
+            <label>Attachment<input type="file" name="file"></label>
+            <div class="error" th:if="${#fields.hasAnyErrors()}">
+                <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+            </div>
+            <button class="primary" type="submit">Publish</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

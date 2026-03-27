@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻动态 - 和石科技</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page-glow page-glow-one"></div>
+<div class="page-glow page-glow-two"></div>
+<div class="shell">
+    <header class="nav">
+        <div>
+            <div class="brand">和石科技</div>
+            <div class="brand-sub">NEWS & UPDATES</div>
+        </div>
+        <div class="nav-actions">
+            <a th:href="@{/}">首页</a>
+            <a th:href="@{/about}">关于我们</a>
+            <a th:href="@{/solutions}">解决方案</a>
+            <a th:href="@{/cases}">案例展示</a>
+            <a th:href="@{/news}">新闻动态</a>
+            <a th:href="@{/contact}">联系我们</a>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="eyebrow">News</div>
+        <h1>企业动态、产品更新与技术文章</h1>
+        <p class="lead">在这里持续发布版本更新、功能说明和项目进展，形成可追踪的内容体系。</p>
+    </section>
+
+    <section class="card newsroom">
+        <div class="section-head">
+            <h2>全部内容</h2>
+            <a class="secondary button-link" th:if="${canAccessArticleCreate}" th:href="@{/articles/new}">发布文章</a>
+        </div>
+        <div class="empty" th:if="${articles.isEmpty()}">还没有内容，欢迎先发布第一篇动态。</div>
+        <div class="article-list" th:unless="${articles.isEmpty()}">
+            <a class="article-item article-item-rich" th:each="article : ${articles}" th:href="@{'/articles/' + ${article.id}}">
+                <div class="article-top">
+                    <strong th:text="${article.title}"></strong>
+                    <span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <p th:text="${#strings.abbreviate(article.content, 180)}"></p>
+                <div class="article-meta">
+                    <span th:text="${article.author.displayName}"></span>
+                    <span th:if="${article.attachmentPath != null}">含附件</span>
+                </div>
+            </a>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模拟股票</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell">
+    <div class="nav">
+        <a class="brand" th:href="@{/}">和石资本</a>
+        <div class="nav-actions">
+            <a th:href="@{/}">首页</a>
+            <a th:href="@{/stock-sim}">模拟股票</a>
+            <a th:href="@{/news}">新闻资讯</a>
+            <a th:href="@{/contact}">联系我们</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-head">
+            <h1>模拟股票页面</h1>
+            <a class="text-link" th:href="@{/}">返回首页</a>
+        </div>
+        <p class="muted">行情图仅作为整页中的一个分析模块，支持分时和日/周/月 K 线，右侧保留交易明细与说明区。</p>
+    </div>
+
+    <div class="stock-page-layout">
+        <div class="card quote-app quote-app-compact">
+            <div class="quote-search">
+                <input id="quoteCode" type="text" placeholder="输入股票代码或名称，例如：600519 / 贵州茅台">
+                <button class="primary" type="button" onclick="queryQuote()">查询</button>
+            </div>
+
+            <div class="quote-summary">
+                <div class="summary-price">
+                    <div id="sName" class="name">-</div>
+                    <div id="sCurrent" class="num">-</div>
+                    <div id="sChange" class="delta">-</div>
+                </div>
+                <div class="summary-grid">
+                    <div>今开 <span id="sOpen">-</span></div>
+                    <div>昨收 <span id="sPreClose">-</span></div>
+                    <div>最高 <span id="sHigh">-</span></div>
+                    <div>最低 <span id="sLow">-</span></div>
+                    <div>成交量 <span id="sVol">-</span></div>
+                    <div>更新时间 <span id="sTime">-</span></div>
+                </div>
+            </div>
+
+            <div class="quote-tabs app-tabs">
+                <button id="tab-min" class="quote-tab active" type="button" onclick="switchTab('min')">分时图</button>
+                <button id="tab-day" class="quote-tab" type="button" onclick="switchTab('day')">日K</button>
+                <button id="tab-week" class="quote-tab" type="button" onclick="switchTab('week')">周K</button>
+                <button id="tab-month" class="quote-tab" type="button" onclick="switchTab('month')">月K</button>
+            </div>
+
+            <div id="quoteHeadline" class="quote-headline">-</div>
+
+            <div class="trade-layout">
+                <div class="chart-col">
+                    <canvas id="quoteMainCanvas" width="700" height="240"></canvas>
+                    <canvas id="quoteVolCanvas" width="700" height="90"></canvas>
+                    <canvas id="quoteIndicatorCanvas" width="700" height="70"></canvas>
+                </div>
+                <div class="tick-col">
+                    <div class="tick-head">
+                        <span>时间</span>
+                        <span>价格</span>
+                        <span>手数</span>
+                    </div>
+                    <div id="tickList" class="tick-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card side-panel">
+            <h3>模块说明</h3>
+            <p class="muted">1. 支持输入股票代码和名称查询。</p>
+            <p class="muted">2. 分时图按完整交易时段绘制，包含午休断点。</p>
+            <p class="muted">3. 日/周/月展示为真正蜡烛图（实体+影线）。</p>
+            <h3>安全提示</h3>
+            <p class="muted">仅用于数据同步与分析展示，不涉及资金操作。</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTab = "min";
+let currentQuote = null;
+let currentCode = "600519";
+const quoteSeries = { min: [], day: [], week: [], month: [] };
+const quoteAvg = { min: [], day: [], week: [], month: [] };
+const quoteVolume = { min: [], day: [], week: [], month: [] };
+const quoteTimes = { min: [], day: [], week: [], month: [] };
+const quoteCandles = { day: [], week: [], month: [] };
+
+function toNum(v, d) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : d;
+}
+
+function minuteOffset(hm) {
+  if (!hm || hm.indexOf(":") < 0) return null;
+  const p = hm.split(":");
+  const h = Number(p[0]), m = Number(p[1]);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+  const t = h * 60 + m;
+  if (t <= 570) return 0;
+  if (t <= 690) return t - 570;
+  if (t < 780) return 120;
+  if (t <= 900) return 120 + (t - 780);
+  return 240;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  ["min", "day", "week", "month"].forEach((t) => {
+    const el = document.getElementById("tab-" + t);
+    if (el) el.classList.toggle("active", t === tab);
+  });
+  drawQuoteChart();
+}
+
+function applySeries(period, points) {
+  if (!Array.isArray(points) || points.length === 0) return false;
+  const prices = [], avgs = [], vols = [], times = [], candles = [];
+  points.forEach((p) => {
+    const price = toNum(p.price, NaN);
+    if (!Number.isFinite(price) || price <= 0) return;
+    const avg = toNum(p.avg, price);
+    const vol = Math.max(0, Math.round(toNum(p.volume, 0)));
+    prices.push(Number(price.toFixed(3)));
+    avgs.push(Number(avg.toFixed(3)));
+    vols.push(vol);
+    times.push(String(p.time || ""));
+    if (period !== "min") {
+      const open = toNum(p.open, price);
+      const close = toNum(p.close, price);
+      const high = toNum(p.high, Math.max(open, close));
+      const low = toNum(p.low, Math.min(open, close));
+      candles.push({
+        open: Number(open.toFixed(3)),
+        close: Number(close.toFixed(3)),
+        high: Number(high.toFixed(3)),
+        low: Number(low.toFixed(3))
+      });
+    }
+  });
+  if (!prices.length) return false;
+  quoteSeries[period] = prices;
+  quoteAvg[period] = avgs;
+  quoteVolume[period] = vols;
+  quoteTimes[period] = times;
+  if (period !== "min") quoteCandles[period] = candles;
+  return true;
+}
+
+async function fetchSeries(code, period) {
+  try {
+    const resp = await fetch("/api/stock/series?code=" + encodeURIComponent(code) + "&period=" + encodeURIComponent(period));
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (_) {
+    return null;
+  }
+}
+
+function drawYAxis(ctx, left, right, topY, bottomY, minVal, maxVal, pre) {
+  ctx.strokeStyle = "#d6dbe3";
+  ctx.lineWidth = 1;
+  ctx.font = "12px Segoe UI";
+  for (let i = 0; i <= 4; i++) {
+    const y = topY + (bottomY - topY) * i / 4;
+    const p = maxVal - (maxVal - minVal) * i / 4;
+    const pct = pre === 0 ? 0 : ((p - pre) / pre) * 100;
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
+    ctx.stroke();
+    ctx.fillStyle = i < 2 ? "#e3504f" : (i > 2 ? "#1e9f64" : "#8b97a6");
+    ctx.fillText(p.toFixed(2), 4, y + 4);
+    ctx.fillText((pct >= 0 ? "+" : "") + pct.toFixed(2) + "%", right + 6, y + 4);
+  }
+}
+
+function drawXAxisLabels(ctx, left, right, baseY, times, period) {
+  ctx.fillStyle = "#8b97a6";
+  ctx.font = "11px Segoe UI";
+  if (period === "min") {
+    const marks = [
+      { text: "09:30", idx: 0 },
+      { text: "10:30", idx: 60 },
+      { text: "11:30/13:00", idx: 120 },
+      { text: "14:00", idx: 180 },
+      { text: "15:00", idx: 240 }
+    ];
+    marks.forEach((m) => {
+      const x = left + (right - left) * (m.idx / 240);
+      ctx.fillText(m.text, x - 20, baseY);
+    });
+    return;
+  }
+  if (!times.length) return;
+  const ticks = Math.min(5, times.length);
+  for (let i = 0; i < ticks; i++) {
+    const idx = Math.round((times.length - 1) * (i / Math.max(1, ticks - 1)));
+    const x = left + (right - left) * (idx / Math.max(1, times.length - 1));
+    const t = times[idx] || "";
+    const label = period === "month" ? t.slice(0, 7) : t.slice(5, 10);
+    ctx.fillText(label, x - 20, baseY);
+  }
+}
+
+function drawQuoteChart() {
+  const prices = quoteSeries[currentTab] || [];
+  const avgs = quoteAvg[currentTab] || [];
+  const vols = quoteVolume[currentTab] || [];
+  const times = quoteTimes[currentTab] || [];
+  const candles = currentTab === "min" ? [] : (quoteCandles[currentTab] || []);
+  const main = document.getElementById("quoteMainCanvas");
+  const vol = document.getElementById("quoteVolCanvas");
+  const ind = document.getElementById("quoteIndicatorCanvas");
+  const mctx = main.getContext("2d");
+  const vctx = vol.getContext("2d");
+  const ictx = ind.getContext("2d");
+  mctx.clearRect(0, 0, main.width, main.height);
+  vctx.clearRect(0, 0, vol.width, vol.height);
+  ictx.clearRect(0, 0, ind.width, ind.height);
+  if (!prices.length) return;
+
+  const left = 44, right = main.width - 58, topY = 16, bottomY = main.height - 24;
+  const pre = toNum(currentQuote && currentQuote.preClose, prices[0]);
+  let minP = Math.min(...prices), maxP = Math.max(...prices);
+  if (candles.length) {
+    minP = Math.min(...candles.map((c) => c.low));
+    maxP = Math.max(...candles.map((c) => c.high));
+  }
+  const top = Math.max(maxP, pre) * 1.02;
+  const bot = Math.min(minP, pre) * 0.98;
+  const yOf = (p) => bottomY - ((p - bot) / (top - bot)) * (bottomY - topY);
+  drawYAxis(mctx, left, right, topY, bottomY, bot, top, pre);
+
+  if (currentTab === "min") {
+    const xAt = (i) => {
+      const off = minuteOffset(times[i]);
+      if (off === null) return left + (right - left) * (i / Math.max(1, prices.length - 1));
+      return left + (right - left) * (off / 240);
+    };
+    mctx.strokeStyle = "#111";
+    mctx.lineWidth = 1.3;
+    mctx.beginPath();
+    prices.forEach((p, i) => {
+      const x = xAt(i), y = yOf(p);
+      if (i === 0) mctx.moveTo(x, y); else mctx.lineTo(x, y);
+    });
+    mctx.stroke();
+    mctx.strokeStyle = "#c8a23b";
+    mctx.lineWidth = 1.1;
+    mctx.beginPath();
+    avgs.forEach((p, i) => {
+      const x = xAt(i), y = yOf(p);
+      if (i === 0) mctx.moveTo(x, y); else mctx.lineTo(x, y);
+    });
+    mctx.stroke();
+  } else {
+    const step = (right - left) / Math.max(1, candles.length - 1);
+    const bodyW = Math.max(2, Math.min(8, step * 0.58));
+    candles.forEach((c, i) => {
+      const x = left + i * step;
+      const yo = yOf(c.open), yc = yOf(c.close), yh = yOf(c.high), yl = yOf(c.low);
+      const up = c.close >= c.open;
+      const color = up ? "#de4d4d" : "#1f9b64";
+      mctx.strokeStyle = color;
+      mctx.fillStyle = color;
+      mctx.beginPath();
+      mctx.moveTo(x, yh);
+      mctx.lineTo(x, yl);
+      mctx.stroke();
+      mctx.fillRect(x - bodyW / 2, Math.min(yo, yc), bodyW, Math.max(1, Math.abs(yc - yo)));
+    });
+  }
+
+  drawXAxisLabels(mctx, left, right, main.height - 6, times, currentTab);
+
+  const vLeft = left, vRight = vol.width - 58, vTop = 8, vBottom = vol.height - 18;
+  const vmax = Math.max(...vols, 1);
+  vols.forEach((v, i) => {
+    let x = vLeft + (vRight - vLeft) * (i / Math.max(1, vols.length - 1));
+    if (currentTab === "min") {
+      const off = minuteOffset(times[i]);
+      if (off !== null) x = vLeft + (vRight - vLeft) * (off / 240);
+    }
+    const h = (v / vmax) * (vBottom - vTop);
+    let up = true;
+    if (candles.length) {
+      const c = candles[Math.min(i, candles.length - 1)];
+      up = c.close >= c.open;
+    } else {
+      up = i === 0 ? true : prices[i] >= prices[i - 1];
+    }
+    vctx.strokeStyle = up ? "#de4d4d" : "#1f9b64";
+    vctx.beginPath();
+    vctx.moveTo(x, vBottom);
+    vctx.lineTo(x, vBottom - h);
+    vctx.stroke();
+  });
+
+  ictx.strokeStyle = "#222";
+  ictx.lineWidth = 1.2;
+  ictx.beginPath();
+  prices.forEach((p, i) => {
+    const x = 20 + (ind.width - 40) * (i / Math.max(1, prices.length - 1));
+    const y = ind.height - 10 - (ind.height - 24) * (toNum(avgs[i], p) - bot) / Math.max(0.0001, top - bot);
+    if (i === 0) ictx.moveTo(x, y); else ictx.lineTo(x, y);
+  });
+  ictx.stroke();
+  ictx.fillStyle = "#737f8d";
+  ictx.font = "12px Segoe UI";
+  ictx.fillText("指标线", 10, 14);
+
+  const now = currentTab === "min"
+    ? prices[prices.length - 1]
+    : (candles[candles.length - 1] || { close: prices[prices.length - 1] }).close;
+  const avgNow = avgs[avgs.length - 1] || now;
+  const chg = now - pre;
+  const pct = pre === 0 ? 0 : (chg / pre) * 100;
+  const volNow = vols.reduce((a, b) => a + b, 0);
+  document.getElementById("quoteHeadline").textContent =
+    (currentQuote && currentQuote.updateTime ? currentQuote.updateTime.slice(11, 16) : "--:--") +
+    " 均价:" + avgNow.toFixed(2) + " 最新:" + now.toFixed(2) +
+    " 涨跌:" + chg.toFixed(2) + " " + pct.toFixed(2) + "%" +
+    " 量:" + Math.round(volNow / 100);
+
+  renderTickList();
+}
+
+function renderTickList() {
+  const list = document.getElementById("tickList");
+  const prices = quoteSeries.min || [];
+  const times = quoteTimes.min || [];
+  if (!prices.length) {
+    list.innerHTML = "";
+    return;
+  }
+  const items = [];
+  for (let i = Math.max(1, prices.length - 22); i < prices.length; i++) {
+    const price = prices[i];
+    const prev = prices[i - 1];
+    const side = price >= prev ? "买" : "卖";
+    const cls = price >= prev ? "up" : "down";
+    const hand = Math.max(1, Math.round((quoteVolume.min[i] || 0) / 100));
+    items.push('<div class="tick-row"><span>' + (times[i] || "--:--") + '</span><span class="' + cls + '">' + price.toFixed(2) + '</span><span>' + side + hand + '</span></div>');
+  }
+  list.innerHTML = items.reverse().join("");
+}
+
+function renderSummary(q) {
+  const cur = toNum(q.current, 0);
+  const pre = toNum(q.preClose, cur);
+  const chg = cur - pre;
+  const pct = pre === 0 ? 0 : (chg / pre) * 100;
+  const name = q && q.name ? String(q.name) : "-";
+  const code = q && q.code ? String(q.code) : "";
+  document.getElementById("sName").textContent = code ? (name + " (" + code + ")") : name;
+  document.getElementById("sCurrent").textContent = cur.toFixed(2);
+  document.getElementById("sCurrent").className = "num " + (chg >= 0 ? "up" : "down");
+  document.getElementById("sChange").textContent = chg.toFixed(2) + " " + pct.toFixed(2) + "%";
+  document.getElementById("sChange").className = "delta " + (chg >= 0 ? "up" : "down");
+  document.getElementById("sOpen").textContent = toNum(q.open, 0).toFixed(2);
+  document.getElementById("sPreClose").textContent = pre.toFixed(2);
+  document.getElementById("sHigh").textContent = toNum(q.high, 0).toFixed(2);
+  document.getElementById("sLow").textContent = toNum(q.low, 0).toFixed(2);
+  document.getElementById("sVol").textContent = Math.round(toNum(q.volume, 0)).toString();
+  document.getElementById("sTime").textContent = q.updateTime || "-";
+}
+
+async function queryQuote() {
+  const input = document.getElementById("quoteCode").value.trim() || "600519";
+  try {
+    const quoteResp = await fetch("/api/stock/quote?code=" + encodeURIComponent(input));
+    if (!quoteResp.ok) throw new Error("bad status");
+    const q = await quoteResp.json();
+    currentQuote = q;
+    currentCode = q.code || input;
+    renderSummary(q);
+    const periods = ["min", "day", "week", "month"];
+    const series = await Promise.all(periods.map((p) => fetchSeries(currentCode, p)));
+    periods.forEach((p, i) => applySeries(p, series[i] && series[i].points));
+    switchTab(currentTab);
+  } catch (_) {
+    alert("查询失败，请稍后重试");
+  }
+}
+
+queryQuote();
+</script>
+</body>
+</html>

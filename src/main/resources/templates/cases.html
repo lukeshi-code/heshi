@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案例展示 - 和石科技</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page-glow page-glow-one"></div>
+<div class="page-glow page-glow-two"></div>
+<div class="shell">
+    <header class="nav">
+        <div>
+            <div class="brand">和石科技</div>
+            <div class="brand-sub">CASES & PRODUCTS</div>
+        </div>
+        <div class="nav-actions">
+            <a th:href="@{/}">首页</a>
+            <a th:href="@{/about}">关于我们</a>
+            <a th:href="@{/solutions}">解决方案</a>
+            <a th:href="@{/cases}">案例展示</a>
+            <a th:href="@{/news}">新闻动态</a>
+            <a th:href="@{/contact}">联系我们</a>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="eyebrow">Cases</div>
+        <h1>围绕真实业务目标交付可落地系统</h1>
+        <p class="lead">我们关注系统上线后的可运营性和可维护性，帮助企业持续迭代而不是一次性交付。</p>
+    </section>
+
+    <section class="grid three">
+        <article class="card feature-card">
+            <span class="card-index">C1</span>
+            <h3>企业官网与品牌中心</h3>
+            <p>统一管理栏目、内容与导航，支撑营销与品牌传播。</p>
+        </article>
+        <article class="card feature-card">
+            <span class="card-index">C2</span>
+            <h3>用户管理与权限后台</h3>
+            <p>实现角色分级、页面等级控制和操作日志审计。</p>
+        </article>
+        <article class="card feature-card">
+            <span class="card-index">C3</span>
+            <h3>行情展示与策略分析</h3>
+            <p>接入实时行情与 K 线图，支持模拟交易页面扩展。</p>
+        </article>
+    </section>
+</div>
+</body>
+</html>

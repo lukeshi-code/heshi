@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${article.title}">Article Detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell narrow">
+    <article class="card article-detail">
+        <a class="text-link" th:href="@{/}">Back to home</a>
+        <h1 th:text="${article.title}"></h1>
+        <p class="muted">
+            <span th:text="${article.author.displayName}"></span>
+            <span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <div class="article-content" th:text="${article.content}"></div>
+        <p th:if="${article.attachmentPath != null}">
+            <a class="button-link secondary" th:href="${article.attachmentPath}" target="_blank">Download attachment</a>
+        </p>
+    </article>
+
+    <section class="card">
+        <h2>Comments</h2>
+        <div class="empty" th:if="${comments.isEmpty()}">No comments yet.</div>
+        <div class="comment-list" th:unless="${comments.isEmpty()}">
+            <div class="comment-item" th:each="comment : ${comments}">
+                <strong th:text="${comment.author.displayName}"></strong>
+                <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                <p th:text="${comment.content}"></p>
+            </div>
+        </div>
+        <form th:if="${authenticated}" th:action="@{'/articles/' + ${article.id} + '/comment'}" th:object="${commentForm}" method="post" class="auth-form">
+            <label>Comment<textarea th:field="*{content}" rows="4" required></textarea></label>
+            <div class="error" th:if="${#fields.hasAnyErrors()}">
+                <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+            </div>
+            <button class="primary" type="submit">Submit comment</button>
+        </form>
+        <a class="text-link" th:unless="${authenticated}" th:href="@{/login}">Login to comment</a>
+    </section>
+</div>
+</body>
+</html>

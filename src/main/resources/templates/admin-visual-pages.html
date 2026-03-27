@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面与等级管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell">
+    <div class="card">
+        <div class="section-head">
+            <h1>页面与等级管理</h1>
+            <div>
+                <a class="text-link" th:href="@{/admin/users}">用户管理</a>
+                <a class="text-link" th:href="@{/}">返回首页</a>
+            </div>
+        </div>
+        <p class="muted">一屏完成页面权限矩阵、首页装修拖拽排序、即时预览与保存。</p>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+        <div class="section-head">
+            <h2>数据源健康状态</h2>
+            <button class="secondary" type="button" onclick="refreshHealth()">刷新</button>
+        </div>
+        <div id="healthText" class="muted">加载中...</div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+        <div class="section-head">
+            <h2>页面权限矩阵（批量）</h2>
+            <button class="primary" type="button" onclick="submitPermissionMatrix()">批量保存权限</button>
+        </div>
+        <form id="permissionMatrixForm" th:action="@{/admin/visual-pages/permissions/batch}" method="post">
+            <div class="admin-list-wrap">
+                <table class="admin-list-table permission-matrix-table">
+                    <thead>
+                    <tr>
+                        <th>页面</th>
+                        <th>路径</th>
+                        <th>公开</th>
+                        <th>成员</th>
+                        <th>编辑</th>
+                        <th>管理员</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="page, stat : ${pages}" class="perm-row"
+                        th:attr="data-path=${page.routePath},data-page-name=${page.pageName},data-row=${stat.index}">
+                        <td th:text="${page.pageName}"></td>
+                        <td th:text="${page.routePath}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="PUBLIC"
+                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).PUBLIC}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="USER"
+                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).USER}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="EDITOR"
+                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).EDITOR}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="ADMIN"
+                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).ADMIN}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="permissionHiddenFields"></div>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+        <div class="section-head">
+            <h2>首页可视化装修器</h2>
+            <button class="primary" type="submit" form="homeDecorForm">保存首页装修</button>
+        </div>
+        <form id="homeDecorForm" th:action="@{/admin/visual-pages/home-decor}" method="post" class="home-decor-grid">
+            <div class="home-decor-editor">
+                <label>Banner 图 URL
+                    <input id="decorBannerUrl" type="text" name="bannerImageUrl" th:value="${homePageConfig.bannerImageUrl}">
+                </label>
+                <label>主标题
+                    <input id="decorHeroTitle" type="text" name="heroTitle" th:value="${homePageConfig.heroTitle}">
+                </label>
+                <label>副标题
+                    <textarea id="decorHeroSubtitle" name="heroSubtitle" rows="3" th:text="${homePageConfig.heroSubtitle}"></textarea>
+                </label>
+                <div class="grid two" style="margin:0;">
+                    <label>主按钮文案
+                        <input id="decorBtnPrimaryText" type="text" name="heroPrimaryButtonText" th:value="${homePageConfig.heroPrimaryButtonText}">
+                    </label>
+                    <label>主按钮链接
+                        <input id="decorBtnPrimaryLink" type="text" name="heroPrimaryButtonLink" th:value="${homePageConfig.heroPrimaryButtonLink}">
+                    </label>
+                </div>
+                <div class="grid two" style="margin:0;">
+                    <label>次按钮文案
+                        <input id="decorBtnSecondaryText" type="text" name="heroSecondaryButtonText" th:value="${homePageConfig.heroSecondaryButtonText}">
+                    </label>
+                    <label>次按钮链接
+                        <input id="decorBtnSecondaryLink" type="text" name="heroSecondaryButtonLink" th:value="${homePageConfig.heroSecondaryButtonLink}">
+                    </label>
+                </div>
+
+                <h3 style="margin-top:16px;">模块拖拽排序</h3>
+                <div class="muted">拖拽卡片可调整顺序，保存后首页立即按新顺序展示。</div>
+                <div id="moduleSortable" class="module-sortable">
+                    <div th:each="m, stat : ${homeModules}" class="module-sort-card" draggable="true" th:attr="data-module-id=${m.id}">
+                        <div class="module-sort-head">
+                            <span class="drag-handle">≡</span>
+                            <strong th:text="${m.moduleKey}"></strong>
+                            <span class="muted">拖拽排序</span>
+                        </div>
+                        <input type="hidden" name="moduleId" th:value="${m.id}">
+                        <input class="module-sort-input" type="hidden" name="moduleSort" th:value="${m.sortOrder}">
+                        <label>标题
+                            <input class="module-title-input" type="text" name="moduleTitle" th:value="${m.title}">
+                        </label>
+                        <label>内容
+                            <textarea class="module-content-input" name="moduleContent" rows="2" th:text="${m.content}"></textarea>
+                        </label>
+                        <div class="grid two" style="margin:0;">
+                            <label>按钮文案
+                                <input class="module-button-text-input" type="text" name="moduleButtonText" th:value="${m.buttonText}">
+                            </label>
+                            <label>按钮链接
+                                <input class="module-button-link-input" type="text" name="moduleButtonLink" th:value="${m.buttonLink}">
+                            </label>
+                        </div>
+                        <label>显示状态
+                            <select class="module-enabled-input" name="moduleEnabled">
+                                <option value="true" th:selected="${m.enabled}">显示</option>
+                                <option value="false" th:selected="${!m.enabled}">隐藏</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-decor-preview">
+                <div class="decor-preview-header">即时预览</div>
+                <div id="previewBannerWrap" class="decor-preview-banner" style="display:none;">
+                    <img id="previewBannerImg" src="" alt="banner">
+                </div>
+                <h3 id="previewHeroTitle">首页标题</h3>
+                <p id="previewHeroSubtitle" class="muted">首页副标题</p>
+                <div class="hero-actions" style="margin-top:10px;">
+                    <a id="previewBtnPrimary" class="primary button-link" href="javascript:void(0)">主按钮</a>
+                    <a id="previewBtnSecondary" class="secondary button-link" href="javascript:void(0)">次按钮</a>
+                </div>
+                <div id="previewModuleList" class="preview-module-list"></div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+        <div class="section-head">
+            <h2>最近操作日志</h2>
+        </div>
+        <div class="list">
+            <div th:if="${logs == null or #lists.isEmpty(logs)}">
+                <strong>暂无日志</strong>
+                <span>进行配置变更后会自动记录。</span>
+            </div>
+            <div th:each="log : ${logs}">
+                <strong th:text="${log.action + ' / ' + log.target}"></strong>
+                <span th:text="${log.operatorName + ' @ ' + #temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function refreshHealth() {
+  const box = document.getElementById("healthText");
+  box.textContent = "加载中...";
+  try {
+    const resp = await fetch("/api/stock/health");
+    if (!resp.ok) throw new Error("bad status");
+    const data = await resp.json();
+    const tencent = data.tencentReachable ? "可用" : "不可用";
+    box.textContent = "行情源: " + tencent + " | 分时缓存: " + (data.seriesCacheSize || 0) + " | 快照缓存: " + (data.quoteCacheSize || 0) + " | 更新时间: " + new Date().toLocaleString("zh-CN");
+  } catch (e) {
+    box.textContent = "健康检查失败，请稍后重试。";
+  }
+}
+
+function submitPermissionMatrix() {
+  const form = document.getElementById("permissionMatrixForm");
+  const hiddenBox = document.getElementById("permissionHiddenFields");
+  hiddenBox.innerHTML = "";
+  const rows = document.querySelectorAll(".perm-row");
+  rows.forEach((row) => {
+    const selected = row.querySelector('input[type="radio"]:checked');
+    if (!selected) return;
+    const pathInput = document.createElement("input");
+    pathInput.type = "hidden";
+    pathInput.name = "pathPattern";
+    pathInput.value = row.dataset.path || "/";
+    hiddenBox.appendChild(pathInput);
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "hidden";
+    nameInput.name = "pageName";
+    nameInput.value = row.dataset.pageName || "";
+    hiddenBox.appendChild(nameInput);
+
+    const levelInput = document.createElement("input");
+    levelInput.type = "hidden";
+    levelInput.name = "requiredLevel";
+    levelInput.value = selected.value;
+    hiddenBox.appendChild(levelInput);
+  });
+  form.submit();
+}
+
+function initModuleDragSort() {
+  const container = document.getElementById("moduleSortable");
+  if (!container) return;
+  let dragging = null;
+  container.querySelectorAll(".module-sort-card").forEach((card) => {
+    card.addEventListener("dragstart", () => {
+      dragging = card;
+      card.classList.add("dragging");
+    });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      dragging = null;
+      resetModuleSortInputs();
+      renderHomePreview();
+    });
+    card.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (!dragging || dragging === card) return;
+      const rect = card.getBoundingClientRect();
+      const after = e.clientY > rect.top + rect.height / 2;
+      const parent = card.parentNode;
+      if (after) parent.insertBefore(dragging, card.nextSibling);
+      else parent.insertBefore(dragging, card);
+    });
+  });
+  resetModuleSortInputs();
+}
+
+function resetModuleSortInputs() {
+  const cards = document.querySelectorAll("#moduleSortable .module-sort-card");
+  cards.forEach((card, index) => {
+    const sortInput = card.querySelector(".module-sort-input");
+    if (sortInput) sortInput.value = String(index + 1);
+  });
+}
+
+function textOf(id, fallback) {
+  const el = document.getElementById(id);
+  if (!el) return fallback;
+  const value = (el.value || "").trim();
+  return value ? value : fallback;
+}
+
+function renderHomePreview() {
+  const bannerUrl = textOf("decorBannerUrl", "");
+  const bannerWrap = document.getElementById("previewBannerWrap");
+  const bannerImg = document.getElementById("previewBannerImg");
+  if (bannerWrap && bannerImg) {
+    if (bannerUrl) {
+      bannerImg.src = bannerUrl;
+      bannerWrap.style.display = "block";
+    } else {
+      bannerImg.src = "";
+      bannerWrap.style.display = "none";
+    }
+  }
+  document.getElementById("previewHeroTitle").textContent = textOf("decorHeroTitle", "企业官网与后台管理，一套系统完成");
+  document.getElementById("previewHeroSubtitle").textContent = textOf("decorHeroSubtitle", "支持用户分级、页面权限配置、内容发布与运营管理。");
+  document.getElementById("previewBtnPrimary").textContent = textOf("decorBtnPrimaryText", "查看解决方案");
+  document.getElementById("previewBtnSecondary").textContent = textOf("decorBtnSecondaryText", "查看案例");
+
+  const list = document.getElementById("previewModuleList");
+  list.innerHTML = "";
+  document.querySelectorAll("#moduleSortable .module-sort-card").forEach((card) => {
+    const enabled = card.querySelector(".module-enabled-input").value === "true";
+    if (!enabled) return;
+    const title = (card.querySelector(".module-title-input").value || "").trim() || "模块标题";
+    const content = (card.querySelector(".module-content-input").value || "").trim() || "模块内容";
+    const buttonText = (card.querySelector(".module-button-text-input").value || "").trim() || "查看";
+    const box = document.createElement("div");
+    box.className = "preview-module-item";
+    box.innerHTML = "<strong>" + escapeHtml(title) + "</strong><p>" + escapeHtml(content) + "</p><span>" + escapeHtml(buttonText) + "</span>";
+    list.appendChild(box);
+  });
+}
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+document.querySelectorAll("#homeDecorForm input, #homeDecorForm textarea, #homeDecorForm select").forEach((el) => {
+  el.addEventListener("input", renderHomePreview);
+  el.addEventListener("change", renderHomePreview);
+});
+
+refreshHealth();
+initModuleDragSort();
+renderHomePreview();
+</script>
+</body>
+</html>

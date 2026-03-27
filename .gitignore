@@ -1,0 +1,6 @@
+target/
+uploads/
+data/
+*.log
+*.tmp
+.DS_Store

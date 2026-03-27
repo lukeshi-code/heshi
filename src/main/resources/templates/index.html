@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和石科技</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="shell">
+    <header class="nav simple-nav">
+        <div>
+            <div class="brand">和石科技</div>
+            <div class="brand-sub">企业应用与网站后台管理</div>
+        </div>
+        <div class="nav-actions">
+            <a th:each="p : ${navPages}" th:href="@{${p.routePath}}" th:text="${p.pageName}"></a>
+            <a th:if="${adminUser}" th:href="@{/admin/users}">用户管理</a>
+            <a th:if="${adminUser}" th:href="@{/admin/visual-pages}">页面配置</a>
+            <a th:unless="${authenticated}" th:href="@{/register}">注册</a>
+            <a th:unless="${authenticated}" th:href="@{/login}">登录</a>
+            <form th:if="${authenticated}" th:action="@{/logout}" method="post">
+                <button class="link-button" type="submit">退出</button>
+            </form>
+        </div>
+    </header>
+
+    <section class="card simple-hero"
+             th:classappend="${homePageConfig.layoutMode.name() == 'CARD'} ? ' layout-card' : (${homePageConfig.layoutMode.name() == 'COMPACT'} ? ' layout-compact' : '')">
+        <div th:if="${homePageConfig.bannerImageUrl != null and !#strings.isEmpty(homePageConfig.bannerImageUrl)}" class="hero-banner">
+            <img th:src="${homePageConfig.bannerImageUrl}" alt="banner">
+        </div>
+        <h1 th:text="${homePageConfig.heroTitle != null and !#strings.isEmpty(homePageConfig.heroTitle) ? homePageConfig.heroTitle : '企业官网与后台管理，一套系统完成'}"></h1>
+        <p class="lead" th:text="${homePageConfig.heroSubtitle != null and !#strings.isEmpty(homePageConfig.heroSubtitle) ? homePageConfig.heroSubtitle : '支持用户分级、页面权限配置、内容发布与运营管理。'}"></p>
+        <div class="hero-actions">
+            <a class="primary button-link"
+               th:text="${homePageConfig.heroPrimaryButtonText != null and !#strings.isEmpty(homePageConfig.heroPrimaryButtonText) ? homePageConfig.heroPrimaryButtonText : '查看解决方案'}"
+               th:href="@{${homePageConfig.heroPrimaryButtonLink != null and !#strings.isEmpty(homePageConfig.heroPrimaryButtonLink) ? homePageConfig.heroPrimaryButtonLink : '/solutions'}}"></a>
+            <a class="secondary button-link"
+               th:text="${homePageConfig.heroSecondaryButtonText != null and !#strings.isEmpty(homePageConfig.heroSecondaryButtonText) ? homePageConfig.heroSecondaryButtonText : '查看案例'}"
+               th:href="@{${homePageConfig.heroSecondaryButtonLink != null and !#strings.isEmpty(homePageConfig.heroSecondaryButtonLink) ? homePageConfig.heroSecondaryButtonLink : '/cases'}}"></a>
+        </div>
+    </section>
+
+    <section class="grid three compact-grid">
+        <div class="metric" th:each="m : ${homeModules}" th:if="${m.enabled}">
+            <strong th:text="${m.title}"></strong>
+            <span th:text="${m.content}"></span>
+            <a th:if="${m.buttonLink != null and !#strings.isEmpty(m.buttonLink)}"
+               class="text-link" th:href="@{${m.buttonLink}}"
+               th:text="${m.buttonText != null and !#strings.isEmpty(m.buttonText) ? m.buttonText : '查看'}"></a>
+        </div>
+    </section>
+
+    <section class="card newsroom">
+        <div class="section-head">
+            <h2>最新动态</h2>
+            <a class="secondary button-link" th:if="${canAccessArticleCreate}" th:href="@{/articles/new}">发布内容</a>
+        </div>
+        <div class="empty" th:if="${articles.isEmpty()}">暂无内容。</div>
+        <div class="article-list" th:unless="${articles.isEmpty()}">
+            <a class="article-item" th:each="article : ${articles}" th:href="@{'/articles/' + ${article.id}}">
+                <div class="article-top">
+                    <strong th:text="${article.title}"></strong>
+                    <span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <p th:text="${#strings.abbreviate(article.content, 120)}"></p>
+                <div class="article-meta">
+                    <span th:text="${article.author.displayName}"></span>
+                    <span th:if="${article.attachmentPath != null}">含附件</span>
+                </div>
+            </a>
+        </div>
+    </section>
+</div>
+</body>
+</html>
