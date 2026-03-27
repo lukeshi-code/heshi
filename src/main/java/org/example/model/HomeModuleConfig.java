@@ -26,7 +26,7 @@ public class HomeModuleConfig {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private ModuleType moduleType = ModuleType.IMAGE_TEXT;
 
     @Column(length = 800)
@@ -39,7 +39,7 @@ public class HomeModuleConfig {
     private String buttonLink;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private DataSourceType dataSourceType = DataSourceType.MANUAL;
 
     @Column(length = 40)

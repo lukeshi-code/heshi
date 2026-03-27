@@ -55,11 +55,14 @@ public class HomeModuleConfigService {
     }
 
     public List<HomeModuleConfig> findByPagePath(String pagePath) {
-        return repository.findAllByPagePathOrderBySortOrderAscIdAsc(pagePath);
+        List<HomeModuleConfig> rows = repository.findAllByPagePathOrderBySortOrderAscIdAsc(pagePath);
+        normalizeRows(rows);
+        return rows;
     }
 
     public List<HomeModuleConfig> findAllModules() {
         List<HomeModuleConfig> list = repository.findAll();
+        normalizeRows(list);
         list.sort((a, b) -> {
             int p = safe(a.getPagePath()).compareTo(safe(b.getPagePath()));
             if (p != 0) return p;
@@ -71,7 +74,9 @@ public class HomeModuleConfigService {
     }
 
     public HomeModuleConfig findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Module not found"));
+        HomeModuleConfig row = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Module not found"));
+        normalizeRow(row);
+        return row;
     }
 
     public HomeModuleConfig create(String pagePath, String title, ModuleType moduleType) {
@@ -210,6 +215,31 @@ public class HomeModuleConfigService {
 
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private void normalizeRows(List<HomeModuleConfig> rows) {
+        for (HomeModuleConfig row : rows) {
+            normalizeRow(row);
+        }
+    }
+
+    private void normalizeRow(HomeModuleConfig row) {
+        boolean changed = false;
+        if (row.getModuleType() == null) {
+            row.setModuleType(ModuleType.IMAGE_TEXT);
+            changed = true;
+        }
+        if (row.getDataSourceType() == null) {
+            row.setDataSourceType(DataSourceType.MANUAL);
+            changed = true;
+        }
+        if (row.getTextAlign() == null || row.getTextAlign().trim().isEmpty()) {
+            row.setTextAlign("left");
+            changed = true;
+        }
+        if (changed && row.getId() != null) {
+            repository.save(row);
+        }
     }
 
     private static class Seed {
