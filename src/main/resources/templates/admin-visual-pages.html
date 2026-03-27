@@ -1,38 +1,38 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>后台管理工作台</title>
+    <title>鍚庡彴绠＄悊宸ヤ綔鍙?/title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body class="admin-proto-body">
 <div class="admin-proto-shell">
     <aside class="admin-proto-sidebar">
-        <div class="admin-proto-logo">网站后台管理</div>
+        <div class="admin-proto-logo">缃戠珯鍚庡彴绠＄悊</div>
         <div class="admin-proto-menu">
-            <div class="item">仪表盘</div>
-            <div class="item active">页面管理</div>
-            <div class="item">内容管理</div>
-            <div class="item">模块管理</div>
-            <div class="item">资源库</div>
-            <div class="item">导航管理</div>
-            <div class="item">主题设置</div>
-            <div class="item">用户权限</div>
-            <div class="item">数据统计</div>
-            <div class="item">系统设置</div>
+            <div class="item">浠〃鐩?/div>
+            <div class="item active">椤甸潰绠＄悊</div>
+            <div class="item">鍐呭绠＄悊</div>
+            <div class="item">妯″潡绠＄悊</div>
+            <div class="item">璧勬簮搴?/div>
+            <div class="item">瀵艰埅绠＄悊</div>
+            <div class="item">涓婚璁剧疆</div>
+            <div class="item">鐢ㄦ埛鏉冮檺</div>
+            <div class="item">鏁版嵁缁熻</div>
+            <div class="item">绯荤粺璁剧疆</div>
         </div>
     </aside>
 
     <main class="admin-proto-main">
         <header class="admin-proto-header">
             <div>
-                <div class="title">页面管理 / 可视化装修</div>
-                <div class="desc">菜单管理、模块配置、模板复用都在同一工作台完成</div>
+                <div class="title">椤甸潰绠＄悊 / 鍙鍖栬淇?/div>
+                <div class="desc">鑿滃崟绠＄悊銆佹ā鍧楅厤缃€佹ā鏉垮鐢ㄩ兘鍦ㄥ悓涓€宸ヤ綔鍙板畬鎴?/div>
             </div>
             <div class="admin-proto-header-actions">
-                <a class="secondary button-link" th:href="@{/admin/users}">用户管理</a>
-                <a class="secondary button-link" th:href="@{/}">返回首页</a>
+                <a class="secondary button-link" th:href="@{/admin/users}">鐢ㄦ埛绠＄悊</a>
+                <a class="secondary button-link" th:href="@{/}">杩斿洖棣栭〉</a>
             </div>
         </header>
 
@@ -42,26 +42,26 @@
         <section class="admin-proto-grid">
             <div class="admin-proto-card">
                 <div class="head">
-                    <h2>菜单管理（树状结构）</h2>
+                    <h2>鑿滃崟绠＄悊锛堟爲鐘剁粨鏋勶級</h2>
                     <form class="admin-inline-form js-submit-lock" th:action="@{/admin/menus/create}" method="post">
-                        <input type="text" name="menuName" placeholder="新菜单名称">
-                        <button class="primary" type="submit">新增菜单</button>
+                        <input type="text" name="menuName" placeholder="鏂拌彍鍗曞悕绉?>
+                        <button class="primary" type="submit">鏂板鑿滃崟</button>
                     </form>
                 </div>
                 <form id="menuBatchForm" class="js-submit-lock" th:action="@{/admin/menus/batch}" method="post">
-                    <div class="muted">拖拽可调整排序；拖到目标菜单右侧可变成其子菜单，拖到左侧恢复一级菜单。</div>
+                    <div class="muted">鎷栨嫿鍙皟鏁存帓搴忥紱鎷栧埌鐩爣鑿滃崟鍙充晶鍙彉鎴愬叾瀛愯彍鍗曪紝鎷栧埌宸︿晶鎭㈠涓€绾ц彍鍗曘€?/div>
                     <div class="admin-list-wrap" style="margin-top:10px;">
                         <table class="admin-list-table">
                             <thead>
                             <tr>
-                                <th>菜单名称</th>
-                                <th>父级</th>
-                                <th>跳转类型</th>
-                                <th>内部页面</th>
-                                <th>外部链接</th>
-                                <th>显示</th>
-                                <th>打开方式</th>
-                                <th>排序</th>
+                                <th>鑿滃崟鍚嶇О</th>
+                                <th>鐖剁骇</th>
+                                <th>璺宠浆绫诲瀷</th>
+                                <th>鍐呴儴椤甸潰</th>
+                                <th>澶栭儴閾炬帴</th>
+                                <th>鏄剧ず</th>
+                                <th>鎵撳紑鏂瑰紡</th>
+                                <th>鎺掑簭</th>
                             </tr>
                             </thead>
                             <tbody id="menuTbody">
@@ -72,27 +72,27 @@
                                 </td>
                                 <td>
                                     <select class="menu-parent-select" name="parentId">
-                                        <option value="0" th:selected="${m.parentId == null}">一级菜单</option>
+                                        <option value="0" th:selected="${m.parentId == null}">涓€绾ц彍鍗?/option>
                                         <option th:each="p : ${menuItems}" th:if="${p.id != m.id}" th:value="${p.id}" th:selected="${m.parentId == p.id}" th:text="${p.menuName}"></option>
                                     </select>
                                 </td>
                                 <td>
                                     <select name="linkType">
-                                        <option th:each="lt : ${allLinkTypes}" th:value="${lt.name()}" th:selected="${m.linkType == lt}" th:text="${lt.label}"></option>
+                                        <option th:each="linkTypeItem : ${T(org.example.model.LinkType).values()}" th:value="${linkTypeItem.name()}" th:selected="${m.linkType == linkTypeItem}" th:text="${linkTypeItem.label}"></option>
                                     </select>
                                 </td>
                                 <td><input type="text" name="internalPath" th:value="${m.internalPath}" placeholder="/about"></td>
                                 <td><input type="text" name="externalUrl" th:value="${m.externalUrl}" placeholder="https://example.com"></td>
                                 <td>
                                     <select name="visible">
-                                        <option value="true" th:selected="${m.visible}">显示</option>
-                                        <option value="false" th:selected="${!m.visible}">隐藏</option>
+                                        <option value="true" th:selected="${m.visible}">鏄剧ず</option>
+                                        <option value="false" th:selected="${!m.visible}">闅愯棌</option>
                                     </select>
                                 </td>
                                 <td>
                                     <select name="openInNewWindow">
-                                        <option value="false" th:selected="${!m.openInNewWindow}">当前页</option>
-                                        <option value="true" th:selected="${m.openInNewWindow}">新窗口</option>
+                                        <option value="false" th:selected="${!m.openInNewWindow}">褰撳墠椤?/option>
+                                        <option value="true" th:selected="${m.openInNewWindow}">鏂扮獥鍙?/option>
                                     </select>
                                 </td>
                                 <td><input class="menu-sort-input" type="number" name="sortOrder" min="1" th:value="${m.sortOrder}"></td>
@@ -101,119 +101,116 @@
                         </table>
                     </div>
                     <div class="button-row" style="margin-top:12px;">
-                        <button class="primary" type="submit">保存菜单配置</button>
+                        <button class="primary" type="submit">淇濆瓨鑿滃崟閰嶇疆</button>
                     </div>
                 </form>
             </div>
 
             <div class="admin-proto-card">
-                <h2>模块新增</h2>
+                <h2>妯″潡鏂板</h2>
                 <form class="auth-form js-submit-lock" th:action="@{/admin/modules/create}" method="post">
-                    <label>所属页面
-                        <select name="pagePath">
+                    <label>鎵€灞為〉闈?                        <select name="pagePath">
                             <option th:each="p : ${pages}" th:value="${p.routePath}" th:text="${p.pageName + ' (' + p.routePath + ')'}"></option>
                         </select>
                     </label>
-                    <label>模块名称
-                        <input type="text" name="title" placeholder="例如：品牌介绍">
+                    <label>妯″潡鍚嶇О
+                        <input type="text" name="title" placeholder="渚嬪锛氬搧鐗屼粙缁?>
                     </label>
-                    <label>模块类型
+                    <label>妯″潡绫诲瀷
                         <select name="moduleType">
                             <option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:text="${mt.label}"></option>
                         </select>
                     </label>
-                    <button class="primary" type="submit">新增模块</button>
+                    <button class="primary" type="submit">鏂板妯″潡</button>
                 </form>
             </div>
         </section>
 
         <section class="card" style="margin-top:16px;">
             <div class="section-head">
-                <h2>模块管理（样式配置 / 数据源 / 模板复用）</h2>
+                <h2>妯″潡绠＄悊锛堟牱寮忛厤缃?/ 鏁版嵁婧?/ 妯℃澘澶嶇敤锛?/h2>
             </div>
             <div class="module-config-list">
                 <div class="module-config-card" th:each="m : ${allModules}">
                     <div class="section-head">
                         <strong th:text="${m.title + '  (' + m.pagePath + ')'}"></strong>
-                        <span class="badge" th:text="${m.enabled ? '已启用' : '未启用'}"></span>
+                        <span class="badge" th:text="${m.enabled ? '宸插惎鐢? : '鏈惎鐢?}"></span>
                     </div>
                     <form class="auth-form js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/advanced'}" method="post">
                         <div class="grid two" style="margin:0;">
-                            <label>模块名称
+                            <label>妯″潡鍚嶇О
                                 <input type="text" name="title" th:value="${m.title}" required>
                             </label>
-                            <label>模块类型
+                            <label>妯″潡绫诲瀷
                                 <select name="moduleType">
                                     <option th:each="mt : ${allModuleTypes}" th:value="${mt.name()}" th:selected="${m.moduleType == mt}" th:text="${mt.label}"></option>
                                 </select>
                             </label>
                         </div>
-                        <label>模块内容
+                        <label>妯″潡鍐呭
                             <textarea name="content" rows="2" th:text="${m.content}"></textarea>
                         </label>
                         <div class="grid two" style="margin:0;">
-                            <label>按钮文案
+                            <label>鎸夐挳鏂囨
                                 <input type="text" name="buttonText" th:value="${m.buttonText}">
                             </label>
-                            <label>按钮链接
+                            <label>鎸夐挳閾炬帴
                                 <input type="text" name="buttonLink" th:value="${m.buttonLink}">
                             </label>
                         </div>
                         <div class="grid two" style="margin:0;">
-                            <label>数据来源
+                            <label>鏁版嵁鏉ユ簮
                                 <select name="dataSourceType">
                                     <option th:each="ds : ${allDataSourceTypes}" th:value="${ds.name()}" th:selected="${m.dataSourceType == ds}" th:text="${ds.label}"></option>
                                 </select>
                             </label>
-                            <label>对齐方式
+                            <label>瀵归綈鏂瑰紡
                                 <select name="textAlign">
-                                    <option value="left" th:selected="${m.textAlign == 'left'}">左对齐</option>
-                                    <option value="center" th:selected="${m.textAlign == 'center'}">居中</option>
-                                    <option value="right" th:selected="${m.textAlign == 'right'}">右对齐</option>
+                                    <option value="left" th:selected="${m.textAlign == 'left'}">宸﹀榻?/option>
+                                    <option value="center" th:selected="${m.textAlign == 'center'}">灞呬腑</option>
+                                    <option value="right" th:selected="${m.textAlign == 'right'}">鍙冲榻?/option>
                                 </select>
                             </label>
                         </div>
                         <div class="grid two" style="margin:0;">
-                            <label>背景色
-                                <input type="text" name="backgroundColor" th:value="${m.backgroundColor}">
+                            <label>鑳屾櫙鑹?                                <input type="text" name="backgroundColor" th:value="${m.backgroundColor}">
                             </label>
-                            <label>背景图 URL
+                            <label>鑳屾櫙鍥?URL
                                 <input type="text" name="backgroundImageUrl" th:value="${m.backgroundImageUrl}">
                             </label>
                         </div>
                         <div class="grid three" style="margin:0;">
-                            <label>字体颜色
+                            <label>瀛椾綋棰滆壊
                                 <input type="text" name="fontColor" th:value="${m.fontColor}">
                             </label>
-                            <label>字体大小
+                            <label>瀛椾綋澶у皬
                                 <input type="text" name="fontSize" th:value="${m.fontSize}">
                             </label>
-                            <label>排序
+                            <label>鎺掑簭
                                 <input type="number" name="sortOrder" min="1" th:value="${m.sortOrder}">
                             </label>
                         </div>
-                        <label>显示状态
-                            <select name="enabled">
-                                <option value="true" th:selected="${m.enabled}">显示</option>
-                                <option value="false" th:selected="${!m.enabled}">隐藏</option>
+                        <label>鏄剧ず鐘舵€?                            <select name="enabled">
+                                <option value="true" th:selected="${m.enabled}">鏄剧ず</option>
+                                <option value="false" th:selected="${!m.enabled}">闅愯棌</option>
                             </select>
                         </label>
-                        <button class="primary" type="submit">保存模块配置</button>
+                        <button class="primary" type="submit">淇濆瓨妯″潡閰嶇疆</button>
                     </form>
                     <div class="grid two" style="margin-top:10px;">
                         <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/save-template'}" method="post">
-                            <label>模板名称
-                                <input type="text" name="templateName" th:value="${m.templateName}" placeholder="模板名">
+                            <label>妯℃澘鍚嶇О
+                                <input type="text" name="templateName" th:value="${m.templateName}" placeholder="妯℃澘鍚?>
                             </label>
-                            <button class="secondary" type="submit">保存模板</button>
+                            <button class="secondary" type="submit">淇濆瓨妯℃澘</button>
                         </form>
                         <form class="js-submit-lock" th:action="@{'/admin/modules/' + ${m.id} + '/apply-template'}" method="post">
-                            <label>套用模板
+                            <label>濂楃敤妯℃澘
                                 <select name="sourceTemplateId">
                                     <option th:each="t : ${moduleTemplates}" th:value="${t.id}" th:text="${t.templateName + ' / ' + t.pagePath}"></option>
                                 </select>
                             </label>
-                            <button class="secondary" type="submit">一键替换模块</button>
+                            <button class="secondary" type="submit">涓€閿浛鎹㈡ā鍧?/button>
                         </form>
                     </div>
                 </div>
@@ -222,12 +219,12 @@
 
         <section class="card" style="margin-top:16px;">
             <div class="section-head">
-                <h2>最近操作日志</h2>
+                <h2>鏈€杩戞搷浣滄棩蹇?/h2>
             </div>
             <div class="list">
                 <div th:if="${logs == null or #lists.isEmpty(logs)}">
-                    <strong>暂无日志</strong>
-                    <span>进行配置变更后会自动记录。</span>
+                    <strong>鏆傛棤鏃ュ織</strong>
+                    <span>杩涜閰嶇疆鍙樻洿鍚庝細鑷姩璁板綍銆?/span>
                 </div>
                 <div th:each="log : ${logs}">
                     <strong th:text="${log.action + ' / ' + log.target}"></strong>
@@ -245,7 +242,7 @@ function bindSubmitLock() {
       form.querySelectorAll('button[type="submit"]').forEach((btn) => {
         btn.disabled = true;
         if (!btn.dataset.oldText) btn.dataset.oldText = btn.textContent;
-        btn.textContent = "保存中...";
+        btn.textContent = "淇濆瓨涓?..";
       });
     });
   });
@@ -312,3 +309,4 @@ resetMenuOrder();
 </script>
 </body>
 </html>
+
