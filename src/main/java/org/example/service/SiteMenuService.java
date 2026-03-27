@@ -101,6 +101,83 @@ public class SiteMenuService {
         }
     }
 
+    public void syncMenusFromPage(SitePageConfig page) {
+        if (page == null) return;
+        String routePath = normalizePath(page.getRoutePath());
+        if (routePath == null || routePath.isEmpty()) return;
+
+        List<SiteMenuItem> all = repository.findAllByOrderBySortOrderAscIdAsc();
+        boolean matched = false;
+        for (SiteMenuItem row : all) {
+            if (row.getLinkType() != LinkType.INTERNAL) continue;
+            if (!routePath.equals(normalizePath(row.getInternalPath()))) continue;
+            matched = true;
+            boolean changed = false;
+            String pageName = safeText(page.getPageName(), row.getMenuName());
+            if (!pageName.equals(row.getMenuName())) {
+                row.setMenuName(pageName);
+                changed = true;
+            }
+            if (row.getParentId() == null) {
+                boolean visible = page.isEnabled() && page.isNavVisible();
+                if (row.isVisible() != visible) {
+                    row.setVisible(visible);
+                    changed = true;
+                }
+                if (row.getSortOrder() != page.getNavOrder()) {
+                    row.setSortOrder(page.getNavOrder());
+                    changed = true;
+                }
+            }
+            if (changed) repository.save(row);
+        }
+
+        if (!matched && page.isEnabled() && page.isNavVisible()) {
+            SiteMenuItem row = new SiteMenuItem();
+            row.setMenuName(safeText(page.getPageName(), "页面"));
+            row.setLinkType(LinkType.INTERNAL);
+            row.setInternalPath(routePath);
+            row.setVisible(true);
+            row.setOpenInNewWindow(false);
+            row.setSortOrder(page.getNavOrder());
+            repository.save(row);
+        }
+    }
+
+    public void syncPagesFromMenus() {
+        List<SitePageConfig> pages = sitePageConfigService.findAll();
+        if (pages.isEmpty()) return;
+
+        List<SiteMenuItem> menus = repository.findAllByOrderBySortOrderAscIdAsc();
+        for (SiteMenuItem m : menus) {
+            if (m.getParentId() != null) continue;
+            if (m.getLinkType() != LinkType.INTERNAL) continue;
+            String menuPath = normalizePath(m.getInternalPath());
+            if (menuPath == null || menuPath.isEmpty()) continue;
+
+            for (SitePageConfig p : pages) {
+                String pagePath = normalizePath(p.getRoutePath());
+                if (!menuPath.equals(pagePath)) continue;
+                boolean changed = false;
+                String menuName = safeText(m.getMenuName(), p.getPageName());
+                if (!menuName.equals(p.getPageName())) {
+                    p.setPageName(menuName);
+                    changed = true;
+                }
+                if (p.getNavOrder() != m.getSortOrder()) {
+                    p.setNavOrder(m.getSortOrder());
+                    changed = true;
+                }
+                if (p.isNavVisible() != m.isVisible()) {
+                    p.setNavVisible(m.isVisible());
+                    changed = true;
+                }
+                if (changed) sitePageConfigService.save(p);
+                break;
+            }
+        }
+    }
+
     public List<LinkType> allLinkTypes() {
         return Arrays.asList(LinkType.values());
     }
@@ -151,5 +228,21 @@ public class SiteMenuService {
         } catch (Exception ex) {
             return LinkType.INTERNAL;
         }
+    }
+
+    private String normalizePath(String path) {
+        if (path == null) return null;
+        String p = path.trim();
+        if (p.isEmpty()) return null;
+        if (!p.startsWith("/")) p = "/" + p;
+        if (p.length() > 1 && p.endsWith("/")) p = p.substring(0, p.length() - 1);
+        return p;
+    }
+
+    private String safeText(String value, String def) {
+        if (value == null) return def == null ? "" : def.trim();
+        String t = value.trim();
+        if (t.isEmpty()) return def == null ? "" : def.trim();
+        return t;
     }
 }

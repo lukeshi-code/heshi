@@ -179,6 +179,7 @@ public class AdminController {
             bannerImageUrl, heroPrimaryButtonText, heroPrimaryButtonLink, heroSecondaryButtonText, heroSecondaryButtonLink);
         SitePageConfig page = sitePageConfigService.findById(id);
         pagePermissionService.updateByPathPattern(page.getRoutePath(), requiredLevel);
+        siteMenuService.syncMenusFromPage(page);
         siteOpsService.log(operator(authentication), "UPDATE_PAGE", page.getRoutePath(), "Updated page visual config");
         redirectAttributes.addFlashAttribute("successMessage", "页面配置已保存：" + page.getPageName());
         return "redirect:/admin/visual-pages?tab=page";
@@ -207,6 +208,7 @@ public class AdminController {
                                  Authentication authentication,
                                  RedirectAttributes redirectAttributes) {
         siteMenuService.batchSave(menuIds, menuNames, parentIds, linkTypes, internalPaths, externalUrls, visibles, openWindows, sortOrders);
+        siteMenuService.syncPagesFromMenus();
         siteOpsService.log(operator(authentication), "BATCH_SAVE_MENU", "/admin/visual-pages", "Saved menu tree and configs");
         redirectAttributes.addFlashAttribute("successMessage", "菜单配置已保存。");
         return "redirect:/admin/visual-pages?tab=page";
