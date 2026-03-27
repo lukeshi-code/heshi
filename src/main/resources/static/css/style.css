@@ -1123,6 +1123,72 @@ select:focus {
     color: #0f172a;
 }
 
+/* High-contrast overrides for admin light layout */
+.admin-proto-body .muted,
+.admin-proto-body .brand-sub,
+.admin-proto-body .admin-proto-header .desc,
+.admin-proto-body .admin-page-item .meta,
+.admin-proto-body .admin-proto-preview .body p {
+    color: #334155;
+}
+
+.admin-proto-body .admin-list-table th {
+    color: #0f172a;
+    background: #e2e8f0;
+}
+
+.admin-proto-body .admin-list-table td {
+    color: #0f172a;
+}
+
+.admin-proto-body input,
+.admin-proto-body textarea,
+.admin-proto-body select {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+}
+
+.admin-proto-body input::placeholder,
+.admin-proto-body textarea::placeholder {
+    color: #64748b;
+}
+
+.admin-proto-body input:focus,
+.admin-proto-body textarea:focus,
+.admin-proto-body select:focus {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+}
+
+.admin-proto-body .secondary,
+.admin-proto-body .button-link {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #94a3b8;
+}
+
+.admin-proto-body .primary {
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid #0f172a;
+}
+
+.admin-proto-body .primary:hover {
+    background: #1e293b;
+}
+
+.admin-proto-body .notice {
+    background: #dbeafe;
+    border-color: #60a5fa;
+    color: #0f172a;
+}
+
+.admin-proto-body .error,
+.admin-proto-body .notice.error {
+    color: #991b1b;
+}
+
 .admin-proto-shell {
     min-height: 100vh;
     display: flex;
