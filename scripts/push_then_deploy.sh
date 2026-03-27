@@ -2,20 +2,20 @@
 set -euo pipefail
 
 REPO_DIR=/opt/heshi-web
-BRANCH=
-COMMIT_MSG=
+BRANCH=${1:-main}
+COMMIT_MSG=${2:-"chore: update website"}
 
-cd " \
+cd "$REPO_DIR"
 
 if ! git remote get-url origin >/dev/null 2>&1; then
- echo \ERROR: origin remote is not configured.\
- exit 1
+  echo "ERROR: origin remote is not configured."
+  exit 1
 fi
 
 if ! git diff --quiet || ! git diff --cached --quiet; then
- git add -A
- git commit -m \\ || true
+  git add -A
+  git commit -m "$COMMIT_MSG" || true
 fi
 
-git push origin \\
-\/scripts/deploy_from_github.sh\ \\
+git push origin "$BRANCH"
+"$REPO_DIR/scripts/deploy_from_github.sh" "$BRANCH"
