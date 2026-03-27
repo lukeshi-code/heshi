@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>解决方案 - 和石科技</title>
+    <title>瑙ｅ喅鏂规 - 鍜岀煶绉戞妧</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,42 +12,41 @@
 <div class="shell">
     <header class="nav">
         <div>
-            <div class="brand">和石科技</div>
+            <div class="brand">鍜岀煶绉戞妧</div>
             <div class="brand-sub">SOLUTIONS & SERVICES</div>
         </div>
         <div class="nav-actions">
-            <a th:href="@{/}">首页</a>
-            <a th:href="@{/about}">关于我们</a>
-            <a th:href="@{/solutions}">解决方案</a>
-            <a th:href="@{/cases}">案例展示</a>
-            <a th:href="@{/news}">新闻动态</a>
-            <a th:href="@{/contact}">联系我们</a>
+            <a th:each="m : ${navMenus}"
+               th:href="${m.resolvedUrl}"
+               th:attr="target=${m.openInNewWindow ? '_blank' : null},rel=${m.openInNewWindow ? 'noopener noreferrer' : null}"
+               th:text="${m.menuName}"></a>
         </div>
     </header>
 
     <section class="page-hero">
         <div class="eyebrow">Solutions</div>
-        <h1>面向企业官网与运营后台的一体化交付</h1>
-        <p class="lead">覆盖账号体系、权限控制、页面可视化管理、内容发布与运维监控，支持快速上线和持续优化。</p>
+        <h1>闈㈠悜浼佷笟瀹樼綉涓庤繍钀ュ悗鍙扮殑涓€浣撳寲浜や粯</h1>
+        <p class="lead">瑕嗙洊璐﹀彿浣撶郴銆佹潈闄愭帶鍒躲€侀〉闈㈠彲瑙嗗寲绠＄悊銆佸唴瀹瑰彂甯冧笌杩愮淮鐩戞帶锛屾敮鎸佸揩閫熶笂绾垮拰鎸佺画浼樺寲銆?/p>
     </section>
 
     <section class="grid three">
         <article class="card feature-card">
             <span class="card-index">A1</span>
-            <h3>官网建设升级</h3>
-            <p>提供响应式页面、栏目管理、内容发布和 SEO 基础能力。</p>
+            <h3>瀹樼綉寤鸿鍗囩骇</h3>
+            <p>鎻愪緵鍝嶅簲寮忛〉闈€佹爮鐩鐞嗐€佸唴瀹瑰彂甯冨拰 SEO 鍩虹鑳藉姏銆?/p>
         </article>
         <article class="card feature-card">
             <span class="card-index">A2</span>
-            <h3>用户与权限系统</h3>
-            <p>支持角色分级、页面等级权限、后台统一配置和访问控制。</p>
+            <h3>鐢ㄦ埛涓庢潈闄愮郴缁?/h3>
+            <p>鏀寔瑙掕壊鍒嗙骇銆侀〉闈㈢瓑绾ф潈闄愩€佸悗鍙扮粺涓€閰嶇疆鍜岃闂帶鍒躲€?/p>
         </article>
         <article class="card feature-card">
             <span class="card-index">A3</span>
-            <h3>行情与分析模块</h3>
-            <p>支持股票查询、分时与 K 线展示、真实与模拟数据对比扩展。</p>
+            <h3>琛屾儏涓庡垎鏋愭ā鍧?/h3>
+            <p>鏀寔鑲＄エ鏌ヨ銆佸垎鏃朵笌 K 绾垮睍绀恒€佺湡瀹炰笌妯℃嫙鏁版嵁瀵规瘮鎵╁睍銆?/p>
         </article>
     </section>
 </div>
 </body>
 </html>
+

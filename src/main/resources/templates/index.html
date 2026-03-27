@@ -14,7 +14,10 @@
             <div class="brand-sub">企业应用与网站后台管理</div>
         </div>
         <div class="nav-actions">
-            <a th:each="p : ${navPages}" th:href="@{${p.routePath}}" th:text="${p.pageName}"></a>
+            <a th:each="m : ${navMenus}"
+               th:href="${m.resolvedUrl}"
+               th:attr="target=${m.openInNewWindow ? '_blank' : null},rel=${m.openInNewWindow ? 'noopener noreferrer' : null}"
+               th:text="${m.menuName}"></a>
             <a th:if="${adminUser}" th:href="@{/admin/users}">用户管理</a>
             <a th:if="${adminUser}" th:href="@{/admin/visual-pages}">页面配置</a>
             <a th:unless="${authenticated}" th:href="@{/register}">注册</a>

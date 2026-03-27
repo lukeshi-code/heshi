@@ -59,4 +59,11 @@ public class SiteMenuItem {
     public void setOpenInNewWindow(boolean openInNewWindow) { this.openInNewWindow = openInNewWindow; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
+
+    public String getResolvedUrl() {
+        if (linkType == LinkType.EXTERNAL) {
+            return externalUrl == null || externalUrl.trim().isEmpty() ? "#" : externalUrl.trim();
+        }
+        return internalPath == null || internalPath.trim().isEmpty() ? "/" : internalPath.trim();
+    }
 }

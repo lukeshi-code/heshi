@@ -2,6 +2,7 @@ package org.example.web;
 
 import org.example.service.PagePermissionService;
 import org.example.service.HomeModuleConfigService;
+import org.example.service.SiteMenuService;
 import org.example.service.SitePageConfigService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -12,19 +13,23 @@ import java.util.List;
 
 import org.example.model.SitePageConfig;
 import org.example.model.HomeModuleConfig;
+import org.example.model.SiteMenuItem;
 
 @ControllerAdvice(annotations = Controller.class)
 public class GlobalModelAdvice {
     private final PagePermissionService pagePermissionService;
     private final SitePageConfigService sitePageConfigService;
     private final HomeModuleConfigService homeModuleConfigService;
+    private final SiteMenuService siteMenuService;
 
     public GlobalModelAdvice(PagePermissionService pagePermissionService,
                              SitePageConfigService sitePageConfigService,
-                             HomeModuleConfigService homeModuleConfigService) {
+                             HomeModuleConfigService homeModuleConfigService,
+                             SiteMenuService siteMenuService) {
         this.pagePermissionService = pagePermissionService;
         this.sitePageConfigService = sitePageConfigService;
         this.homeModuleConfigService = homeModuleConfigService;
+        this.siteMenuService = siteMenuService;
     }
 
     @ModelAttribute("authenticated")
@@ -60,6 +65,11 @@ public class GlobalModelAdvice {
     @ModelAttribute("navPages")
     public List<SitePageConfig> navPages() {
         return sitePageConfigService.navPages();
+    }
+
+    @ModelAttribute("navMenus")
+    public List<SiteMenuItem> navMenus() {
+        return siteMenuService.visibleTopMenus();
     }
 
     @ModelAttribute("homePageConfig")
