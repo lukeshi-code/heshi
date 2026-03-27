@@ -25,8 +25,8 @@
 
     <section class="page-hero">
         <div class="eyebrow">Cases</div>
-        <h1>围绕真实业务目标交付可落地系统</h1>
-        <p class="lead">我们关注系统上线后的可运营性和可维护性，帮助企业持续迭代而不是一次性交付。</p>
+        <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '围绕真实业务目标交付可落地系统'}">围绕真实业务目标交付可落地系统</h1>
+        <p class="lead" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '我们关注系统上线后的可运营性和可维护性，帮助企业持续迭代而不是一次性交付。'}">我们关注系统上线后的可运营性和可维护性，帮助企业持续迭代而不是一次性交付。</p>
     </section>
 
     <section class="grid three">

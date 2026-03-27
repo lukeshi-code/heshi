@@ -25,8 +25,8 @@
 
     <section class="page-hero">
         <div class="eyebrow">Contact</div>
-        <h1>欢迎和我们讨论项目建设与上线计划</h1>
-        <p class="lead">如果你希望完善官网、搭建后台、优化权限体系或接入行情模块，欢迎联系。</p>
+        <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '欢迎和我们讨论项目建设与上线计划'}">欢迎和我们讨论项目建设与上线计划</h1>
+        <p class="lead" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '如果你希望完善官网、搭建后台、优化权限体系或接入行情模块，欢迎联系。'}">如果你希望完善官网、搭建后台、优化权限体系或接入行情模块，欢迎联系。</p>
     </section>
 
     <section class="grid two">

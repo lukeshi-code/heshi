@@ -25,8 +25,8 @@
 
     <section class="page-hero">
         <div class="eyebrow">Solutions</div>
-        <h1>面向企业官网与运营后台的一体化交付</h1>
-        <p class="lead">覆盖账号体系、权限控制、页面可视化管理、内容发布与运维监控，支持快速上线和持续优化。</p>
+        <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '面向企业官网与运营后台的一体化交付'}">面向企业官网与运营后台的一体化交付</h1>
+        <p class="lead" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '覆盖账号体系、权限控制、页面可视化管理、内容发布与运维监控，支持快速上线和持续优化。'}">覆盖账号体系、权限控制、页面可视化管理、内容发布与运维监控，支持快速上线和持续优化。</p>
     </section>
 
     <section class="grid three">

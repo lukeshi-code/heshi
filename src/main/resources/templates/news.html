@@ -25,8 +25,8 @@
 
     <section class="page-hero">
         <div class="eyebrow">News</div>
-        <h1>企业动态、产品更新与技术文章</h1>
-        <p class="lead">在这里持续发布版本更新、功能说明和项目进展，形成可追踪的内容体系。</p>
+        <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '企业动态、产品更新与技术文章'}">企业动态、产品更新与技术文章</h1>
+        <p class="lead" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '在这里持续发布版本更新、功能说明和项目进展，形成可追踪的内容体系。'}">在这里持续发布版本更新、功能说明和项目进展，形成可追踪的内容体系。</p>
     </section>
 
     <section class="card newsroom">

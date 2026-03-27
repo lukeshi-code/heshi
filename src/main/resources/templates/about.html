@@ -25,8 +25,8 @@
 
     <section class="page-hero">
         <div class="eyebrow">About</div>
-        <h1>我们专注企业级产品与运营后台建设</h1>
-        <p class="lead">围绕真实业务场景，提供从前台展示到后台管理的完整方案，让项目上线后可持续迭代。</p>
+        <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '我们专注企业级产品与运营后台建设'}">我们专注企业级产品与运营后台建设</h1>
+        <p class="lead" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '围绕真实业务场景，提供从前台展示到后台管理的完整方案，让项目上线后可持续迭代。'}">围绕真实业务场景，提供从前台展示到后台管理的完整方案，让项目上线后可持续迭代。</p>
     </section>
 
     <section class="grid two">

@@ -20,10 +20,10 @@
 
     <div class="card">
         <div class="section-head">
-            <h1>模拟股票页面</h1>
+            <h1 th:text="${currentPageConfig != null and currentPageConfig.heroTitle != null and !#strings.isEmpty(currentPageConfig.heroTitle) ? currentPageConfig.heroTitle : '模拟股票页面'}">模拟股票页面</h1>
             <a class="text-link" th:href="@{/}">返回首页</a>
         </div>
-        <p class="muted">行情图仅作为整页中的一个分析模块，支持分时和日/周/月 K 线，右侧保留交易明细与说明区。</p>
+        <p class="muted" th:text="${currentPageConfig != null and currentPageConfig.heroSubtitle != null and !#strings.isEmpty(currentPageConfig.heroSubtitle) ? currentPageConfig.heroSubtitle : '行情图仅作为整页中的一个分析模块，支持分时和日/周/月 K 线，右侧保留交易明细与说明区。'}">行情图仅作为整页中的一个分析模块，支持分时和日/周/月 K 线，右侧保留交易明细与说明区。</p>
     </div>
 
     <div class="stock-page-layout">

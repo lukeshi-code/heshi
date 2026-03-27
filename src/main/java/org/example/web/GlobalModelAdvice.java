@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -80,5 +81,26 @@ public class GlobalModelAdvice {
     @ModelAttribute("homeModules")
     public List<HomeModuleConfig> homeModules() {
         return homeModuleConfigService.findHomeModules();
+    }
+
+    @ModelAttribute("currentPageConfig")
+    public SitePageConfig currentPageConfig(HttpServletRequest request) {
+        if (request == null) return null;
+        String path = request.getRequestURI();
+        if (path == null || path.trim().isEmpty()) return null;
+        path = path.trim();
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        if (path.startsWith("/admin") || path.startsWith("/api")
+            || path.startsWith("/css") || path.startsWith("/js")
+            || path.startsWith("/uploads")) {
+            return null;
+        }
+        try {
+            return sitePageConfigService.findByRoutePath(path);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }
