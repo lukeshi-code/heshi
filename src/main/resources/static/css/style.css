@@ -1260,6 +1260,32 @@ select:focus {
     color: #334155;
 }
 
+.menu-row.dragging {
+    opacity: 0.5;
+}
+
+.menu-row.drag-as-child {
+    outline: 2px dashed #2563eb;
+    background: #eff6ff;
+}
+
+.menu-row.drag-as-sibling {
+    outline: 2px dashed #64748b;
+    background: #f8fafc;
+}
+
+.module-config-list {
+    display: grid;
+    gap: 12px;
+}
+
+.module-config-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px;
+    background: #fff;
+}
+
 .admin-proto-preview {
     border: 1px solid #e2e8f0;
     border-radius: 14px;

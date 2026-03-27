@@ -5,6 +5,7 @@ import org.example.model.UserAccount;
 import org.example.repository.UserAccountRepository;
 import org.example.service.HomeModuleConfigService;
 import org.example.service.PagePermissionService;
+import org.example.service.SiteMenuService;
 import org.example.service.SitePageConfigService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,17 +21,20 @@ public class DataInitializer implements CommandLineRunner {
     private final PagePermissionService pagePermissionService;
     private final SitePageConfigService sitePageConfigService;
     private final HomeModuleConfigService homeModuleConfigService;
+    private final SiteMenuService siteMenuService;
 
     public DataInitializer(UserAccountRepository userAccountRepository,
                            PasswordEncoder passwordEncoder,
                            PagePermissionService pagePermissionService,
                            SitePageConfigService sitePageConfigService,
-                           HomeModuleConfigService homeModuleConfigService) {
+                           HomeModuleConfigService homeModuleConfigService,
+                           SiteMenuService siteMenuService) {
         this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
         this.pagePermissionService = pagePermissionService;
         this.sitePageConfigService = sitePageConfigService;
         this.homeModuleConfigService = homeModuleConfigService;
+        this.siteMenuService = siteMenuService;
     }
 
     @Override
@@ -43,6 +47,9 @@ public class DataInitializer implements CommandLineRunner {
         }
         if (homeModuleConfigService != null) {
             homeModuleConfigService.ensureDefaults();
+        }
+        if (siteMenuService != null) {
+            siteMenuService.ensureDefaults();
         }
         if (userAccountRepository.existsByUsername("admin")) {
             return;

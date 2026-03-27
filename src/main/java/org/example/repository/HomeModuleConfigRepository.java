@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface HomeModuleConfigRepository extends JpaRepository<HomeModuleConfig, Long> {
     List<HomeModuleConfig> findAllByPagePathOrderBySortOrderAscIdAsc(String pagePath);
     Optional<HomeModuleConfig> findByPagePathAndModuleKey(String pagePath, String moduleKey);
+    List<HomeModuleConfig> findAllByTemplateNameIsNotNullOrderByTemplateNameAscIdAsc();
 }
-
