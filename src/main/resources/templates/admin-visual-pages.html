@@ -16,8 +16,11 @@
                 <a class="text-link" th:href="@{/}">返回首页</a>
             </div>
         </div>
-        <p class="muted">一屏完成页面权限矩阵、首页装修拖拽排序、即时预览与保存。</p>
+        <p class="muted">统一维护页面样式、权限等级、首页区块和内容排序。</p>
     </div>
+
+    <div class="notice" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="error" th:if="${errorMessage}" th:text="${errorMessage}" style="margin-top: 12px;"></div>
 
     <div class="card" style="margin-top: 16px;">
         <div class="section-head">
@@ -30,9 +33,9 @@
     <div class="card" style="margin-top:16px;">
         <div class="section-head">
             <h2>页面权限矩阵（批量）</h2>
-            <button class="primary" type="button" onclick="submitPermissionMatrix()">批量保存权限</button>
+            <button id="permissionSaveBtn" class="primary" type="button" onclick="submitPermissionMatrix()">批量保存权限</button>
         </div>
-        <form id="permissionMatrixForm" th:action="@{/admin/visual-pages/permissions/batch}" method="post">
+        <form id="permissionMatrixForm" class="js-submit-lock" th:action="@{/admin/visual-pages/permissions/batch}" method="post">
             <div class="admin-list-wrap">
                 <table class="admin-list-table permission-matrix-table">
                     <thead>
@@ -47,17 +50,13 @@
                     </thead>
                     <tbody>
                     <tr th:each="page, stat : ${pages}" class="perm-row"
-                        th:attr="data-path=${page.routePath},data-page-name=${page.pageName},data-row=${stat.index}">
+                        th:attr="data-path=${page.routePath},data-page-name=${page.pageName}">
                         <td th:text="${page.pageName}"></td>
                         <td th:text="${page.routePath}"></td>
-                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="PUBLIC"
-                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).PUBLIC}"></td>
-                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="USER"
-                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).USER}"></td>
-                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="EDITOR"
-                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).EDITOR}"></td>
-                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="ADMIN"
-                                   th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).ADMIN}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="PUBLIC" th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).PUBLIC}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="USER" th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).USER}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="EDITOR" th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).EDITOR}"></td>
+                        <td><input type="radio" th:name="${'perm_' + stat.index}" value="ADMIN" th:checked="${pageLevelByPath[page.routePath] == T(org.example.model.AccessLevel).ADMIN}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -68,12 +67,95 @@
 
     <div class="card" style="margin-top:16px;">
         <div class="section-head">
+            <h2>页面可视化维护（全站）</h2>
+        </div>
+        <div class="visual-grid">
+            <div class="visual-form-card" th:each="page : ${pages}">
+                <div class="visual-header">
+                    <strong th:text="${page.pageName}"></strong>
+                    <span th:text="${page.routePath}"></span>
+                </div>
+                <form class="auth-form visual-form js-submit-lock" th:action="@{'/admin/visual-pages/' + ${page.id}}" method="post">
+                    <label>页面名称
+                        <input type="text" name="pageName" th:value="${page.pageName}" required>
+                    </label>
+                    <label>导航排序
+                        <input type="number" name="navOrder" min="0" th:value="${page.navOrder}" required>
+                    </label>
+                    <div class="grid two" style="margin: 0;">
+                        <label>布局模式
+                            <select name="layoutMode">
+                                <option th:each="mode : ${allLayoutModes}" th:value="${mode.name()}" th:selected="${mode == page.layoutMode}" th:text="${mode.label}"></option>
+                            </select>
+                        </label>
+                        <label>页面等级
+                            <select name="requiredLevel">
+                                <option th:each="level : ${allLevels}" th:value="${level.name()}" th:selected="${pageLevelByPath[page.routePath] == level}" th:text="${level.label}"></option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <label>Banner 图片 URL
+                        <input type="text" name="bannerImageUrl" th:value="${page.bannerImageUrl}">
+                    </label>
+                    <label>主标题
+                        <input type="text" name="heroTitle" th:value="${page.heroTitle}">
+                    </label>
+                    <label>副标题
+                        <textarea name="heroSubtitle" rows="3" th:text="${page.heroSubtitle}"></textarea>
+                    </label>
+                    <div class="grid two" style="margin: 0;">
+                        <label>主按钮文案
+                            <input type="text" name="heroPrimaryButtonText" th:value="${page.heroPrimaryButtonText}">
+                        </label>
+                        <label>主按钮链接
+                            <input type="text" name="heroPrimaryButtonLink" th:value="${page.heroPrimaryButtonLink}">
+                        </label>
+                    </div>
+                    <div class="grid two" style="margin: 0;">
+                        <label>次按钮文案
+                            <input type="text" name="heroSecondaryButtonText" th:value="${page.heroSecondaryButtonText}">
+                        </label>
+                        <label>次按钮链接
+                            <input type="text" name="heroSecondaryButtonLink" th:value="${page.heroSecondaryButtonLink}">
+                        </label>
+                    </div>
+                    <div class="visual-toggles">
+                        <label class="admin-check">
+                            <input type="checkbox" name="navVisible" th:checked="${page.navVisible}">
+                            <span>导航显示</span>
+                        </label>
+                        <label class="admin-check">
+                            <input type="checkbox" name="enabled" th:checked="${page.enabled}">
+                            <span>页面启用</span>
+                        </label>
+                    </div>
+                    <div class="button-row">
+                        <button class="primary" type="submit">保存页面</button>
+                    </div>
+                </form>
+
+                <form class="js-submit-lock" th:action="@{'/admin/visual-pages/' + ${page.id} + '/rollback-latest'}" method="post" style="margin-top: 8px;">
+                    <button class="secondary" type="submit">回滚到最近版本</button>
+                </form>
+
+                <div class="visual-preview" style="margin-top: 12px;">
+                    <strong>即时预览</strong>
+                    <h3 th:text="${page.heroTitle != null and !#strings.isEmpty(page.heroTitle) ? page.heroTitle : page.pageName}"></h3>
+                    <p th:text="${page.heroSubtitle != null and !#strings.isEmpty(page.heroSubtitle) ? page.heroSubtitle : '未设置副标题'}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+        <div class="section-head">
             <h2>首页可视化装修器</h2>
             <button class="primary" type="submit" form="homeDecorForm">保存首页装修</button>
         </div>
-        <form id="homeDecorForm" th:action="@{/admin/visual-pages/home-decor}" method="post" class="home-decor-grid">
+        <form id="homeDecorForm" class="js-submit-lock home-decor-grid" th:action="@{/admin/visual-pages/home-decor}" method="post">
             <div class="home-decor-editor">
-                <label>Banner 图 URL
+                <label>Banner 图片 URL
                     <input id="decorBannerUrl" type="text" name="bannerImageUrl" th:value="${homePageConfig.bannerImageUrl}">
                 </label>
                 <label>主标题
@@ -100,9 +182,9 @@
                 </div>
 
                 <h3 style="margin-top:16px;">模块拖拽排序</h3>
-                <div class="muted">拖拽卡片可调整顺序，保存后首页立即按新顺序展示。</div>
+                <div class="muted">拖拽卡片调整顺序，保存后首页会按新顺序展示。</div>
                 <div id="moduleSortable" class="module-sortable">
-                    <div th:each="m, stat : ${homeModules}" class="module-sort-card" draggable="true" th:attr="data-module-id=${m.id}">
+                    <div th:each="m : ${homeModules}" class="module-sort-card" draggable="true">
                         <div class="module-sort-head">
                             <span class="drag-handle">≡</span>
                             <strong th:text="${m.moduleKey}"></strong>
@@ -139,11 +221,11 @@
                 <div id="previewBannerWrap" class="decor-preview-banner" style="display:none;">
                     <img id="previewBannerImg" src="" alt="banner">
                 </div>
-                <h3 id="previewHeroTitle">首页标题</h3>
-                <p id="previewHeroSubtitle" class="muted">首页副标题</p>
+                <h3 id="previewHeroTitle">企业官网与后台管理，一套系统完成</h3>
+                <p id="previewHeroSubtitle" class="muted">支持用户分级、页面权限配置、内容发布与运营管理。</p>
                 <div class="hero-actions" style="margin-top:10px;">
-                    <a id="previewBtnPrimary" class="primary button-link" href="javascript:void(0)">主按钮</a>
-                    <a id="previewBtnSecondary" class="secondary button-link" href="javascript:void(0)">次按钮</a>
+                    <a id="previewBtnPrimary" class="primary button-link" href="javascript:void(0)">查看解决方案</a>
+                    <a id="previewBtnSecondary" class="secondary button-link" href="javascript:void(0)">查看案例</a>
                 </div>
                 <div id="previewModuleList" class="preview-module-list"></div>
             </div>
@@ -177,37 +259,28 @@ async function refreshHealth() {
     const data = await resp.json();
     const tencent = data.tencentReachable ? "可用" : "不可用";
     box.textContent = "行情源: " + tencent + " | 分时缓存: " + (data.seriesCacheSize || 0) + " | 快照缓存: " + (data.quoteCacheSize || 0) + " | 更新时间: " + new Date().toLocaleString("zh-CN");
-  } catch (e) {
+  } catch (_) {
     box.textContent = "健康检查失败，请稍后重试。";
   }
 }
 
 function submitPermissionMatrix() {
   const form = document.getElementById("permissionMatrixForm");
+  const saveBtn = document.getElementById("permissionSaveBtn");
   const hiddenBox = document.getElementById("permissionHiddenFields");
   hiddenBox.innerHTML = "";
-  const rows = document.querySelectorAll(".perm-row");
-  rows.forEach((row) => {
+  document.querySelectorAll(".perm-row").forEach((row) => {
     const selected = row.querySelector('input[type="radio"]:checked');
     if (!selected) return;
-    const pathInput = document.createElement("input");
-    pathInput.type = "hidden";
-    pathInput.name = "pathPattern";
-    pathInput.value = row.dataset.path || "/";
-    hiddenBox.appendChild(pathInput);
-
-    const nameInput = document.createElement("input");
-    nameInput.type = "hidden";
-    nameInput.name = "pageName";
-    nameInput.value = row.dataset.pageName || "";
-    hiddenBox.appendChild(nameInput);
-
-    const levelInput = document.createElement("input");
-    levelInput.type = "hidden";
-    levelInput.name = "requiredLevel";
-    levelInput.value = selected.value;
-    hiddenBox.appendChild(levelInput);
+    hiddenBox.insertAdjacentHTML("beforeend",
+      '<input type="hidden" name="pathPattern" value="' + escapeHtml(row.dataset.path || "/") + '">' +
+      '<input type="hidden" name="pageName" value="' + escapeHtml(row.dataset.pageName || "") + '">' +
+      '<input type="hidden" name="requiredLevel" value="' + escapeHtml(selected.value) + '">');
   });
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "保存中...";
+  }
   form.submit();
 }
 
@@ -231,17 +304,15 @@ function initModuleDragSort() {
       if (!dragging || dragging === card) return;
       const rect = card.getBoundingClientRect();
       const after = e.clientY > rect.top + rect.height / 2;
-      const parent = card.parentNode;
-      if (after) parent.insertBefore(dragging, card.nextSibling);
-      else parent.insertBefore(dragging, card);
+      if (after) card.parentNode.insertBefore(dragging, card.nextSibling);
+      else card.parentNode.insertBefore(dragging, card);
     });
   });
   resetModuleSortInputs();
 }
 
 function resetModuleSortInputs() {
-  const cards = document.querySelectorAll("#moduleSortable .module-sort-card");
-  cards.forEach((card, index) => {
+  document.querySelectorAll("#moduleSortable .module-sort-card").forEach((card, index) => {
     const sortInput = card.querySelector(".module-sort-input");
     if (sortInput) sortInput.value = String(index + 1);
   });
@@ -280,10 +351,23 @@ function renderHomePreview() {
     const title = (card.querySelector(".module-title-input").value || "").trim() || "模块标题";
     const content = (card.querySelector(".module-content-input").value || "").trim() || "模块内容";
     const buttonText = (card.querySelector(".module-button-text-input").value || "").trim() || "查看";
-    const box = document.createElement("div");
-    box.className = "preview-module-item";
-    box.innerHTML = "<strong>" + escapeHtml(title) + "</strong><p>" + escapeHtml(content) + "</p><span>" + escapeHtml(buttonText) + "</span>";
-    list.appendChild(box);
+    const item = document.createElement("div");
+    item.className = "preview-module-item";
+    item.innerHTML = "<strong>" + escapeHtml(title) + "</strong><p>" + escapeHtml(content) + "</p><span>" + escapeHtml(buttonText) + "</span>";
+    list.appendChild(item);
+  });
+}
+
+function bindSubmitFeedback() {
+  document.querySelectorAll(".js-submit-lock").forEach((form) => {
+    form.addEventListener("submit", () => {
+      const submitButtons = form.querySelectorAll('button[type="submit"]');
+      submitButtons.forEach((btn) => {
+        btn.disabled = true;
+        if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent;
+        btn.textContent = "保存中...";
+      });
+    });
   });
 }
 
@@ -292,7 +376,7 @@ function escapeHtml(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -304,6 +388,7 @@ document.querySelectorAll("#homeDecorForm input, #homeDecorForm textarea, #homeD
 refreshHealth();
 initModuleDragSort();
 renderHomePreview();
+bindSubmitFeedback();
 </script>
 </body>
 </html>

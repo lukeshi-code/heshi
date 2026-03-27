@@ -102,7 +102,8 @@ public class AdminController {
                                    @RequestParam(value = "heroSecondaryButtonText", required = false) String heroSecondaryButtonText,
                                    @RequestParam(value = "heroSecondaryButtonLink", required = false) String heroSecondaryButtonLink,
                                    @RequestParam("requiredLevel") AccessLevel requiredLevel,
-                                   Authentication authentication) {
+                                   Authentication authentication,
+                                   RedirectAttributes redirectAttributes) {
         SitePageConfig before = sitePageConfigService.findById(id);
         siteOpsService.savePageSnapshot(before, homeModuleConfigService.findHomeModules());
         sitePageConfigService.update(id, pageName, navOrder, navVisible, enabled, layoutMode, heroTitle, heroSubtitle,
@@ -110,6 +111,7 @@ public class AdminController {
         SitePageConfig page = sitePageConfigService.findById(id);
         pagePermissionService.updateByPathPattern(page.getRoutePath(), requiredLevel);
         siteOpsService.log(operator(authentication), "UPDATE_PAGE", page.getRoutePath(), "Updated visual config");
+        redirectAttributes.addFlashAttribute("successMessage", "页面配置已保存：" + page.getPageName());
         return "redirect:/admin/visual-pages";
     }
 
@@ -128,7 +130,8 @@ public class AdminController {
                                 @RequestParam(value = "moduleButtonLink", required = false) List<String> moduleButtonLinks,
                                 @RequestParam(value = "moduleEnabled", required = false) List<String> moduleEnabledValues,
                                 @RequestParam(value = "moduleSort", required = false) List<Integer> moduleSorts,
-                                Authentication authentication) {
+                                Authentication authentication,
+                                RedirectAttributes redirectAttributes) {
         SitePageConfig home = sitePageConfigService.findByRoutePath("/");
         siteOpsService.savePageSnapshot(home, homeModuleConfigService.findHomeModules());
         sitePageConfigService.update(home.getId(), home.getPageName(), home.getNavOrder(), home.isNavVisible(),
@@ -148,6 +151,7 @@ public class AdminController {
             }
         }
         siteOpsService.log(operator(authentication), "UPDATE_HOME_DECOR", "/", "Updated home visual decorator");
+        redirectAttributes.addFlashAttribute("successMessage", "首页装修保存成功。");
         return "redirect:/admin/visual-pages";
     }
 
@@ -155,7 +159,8 @@ public class AdminController {
     public String batchUpdatePermissions(@RequestParam("pathPattern") List<String> pathPatterns,
                                          @RequestParam("requiredLevel") List<AccessLevel> levels,
                                          @RequestParam(value = "pageName", required = false) List<String> pageNames,
-                                         Authentication authentication) {
+                                         Authentication authentication,
+                                         RedirectAttributes redirectAttributes) {
         int total = Math.min(pathPatterns == null ? 0 : pathPatterns.size(), levels == null ? 0 : levels.size());
         for (int i = 0; i < total; i++) {
             String path = listValue(pathPatterns, i);
@@ -164,6 +169,7 @@ public class AdminController {
             pagePermissionService.upsertByPathPattern(path, pageName, level);
         }
         siteOpsService.log(operator(authentication), "BATCH_UPDATE_PERMISSION", "/admin/visual-pages", "Batch updated page levels");
+        redirectAttributes.addFlashAttribute("successMessage", "页面权限已批量保存。");
         return "redirect:/admin/visual-pages";
     }
 
@@ -175,9 +181,11 @@ public class AdminController {
                                    @RequestParam(value = "buttonLink", required = false) String buttonLink,
                                    @RequestParam(value = "enabled", defaultValue = "false") boolean enabled,
                                    @RequestParam("sortOrder") Integer sortOrder,
-                                   Authentication authentication) {
+                                   Authentication authentication,
+                                   RedirectAttributes redirectAttributes) {
         homeModuleConfigService.update(id, title, content, buttonText, buttonLink, enabled, sortOrder);
         siteOpsService.log(operator(authentication), "UPDATE_MODULE", "home-module#" + id, "Updated module config");
+        redirectAttributes.addFlashAttribute("successMessage", "模块配置已保存。");
         return "redirect:/admin/visual-pages";
     }
 
@@ -226,6 +234,7 @@ public class AdminController {
                 }
             }
             siteOpsService.log(operator(authentication), "ROLLBACK_PAGE", page.getRoutePath(), "Rollback to latest snapshot");
+            redirectAttributes.addFlashAttribute("successMessage", "页面已回滚到最近快照。");
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", "Rollback failed.");
         }
